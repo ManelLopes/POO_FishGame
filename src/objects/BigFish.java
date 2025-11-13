@@ -1,6 +1,7 @@
 package objects;
 
 import pt.iscte.poo.game.Room;
+import pt.iscte.poo.utils.Direction;
 
 public class BigFish extends GameCharacter {
 
@@ -12,6 +13,10 @@ public class BigFish extends GameCharacter {
 
 	public static BigFish getInstance() {
 		return bf;
+	}
+	
+	public void move(Direction d) {
+		
 	}
 	
 	@Override
