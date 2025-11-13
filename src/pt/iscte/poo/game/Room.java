@@ -8,7 +8,10 @@ import objects.BigFish;
 import objects.GameObject;
 import objects.SmallFish;
 import pt.iscte.poo.utils.Point2D;
-
+import java. util. Scanner;
+import java.io.FileNotFoundException;
+import objects.Wall;
+import objects.SteelHorizontal;
 public class Room {
 	
 	private List<GameObject> objects;
@@ -68,19 +71,60 @@ public class Room {
 		r.setEngine(engine);
 		r.setName(f.getName());
 		
-		GameObject water = new Water(r);
-		water.setPosition(new Point2D(0, 0));
-		r.addObject(water);
+		List<String> linhas = new ArrayList<>();
+
+		try (Scanner sc = new Scanner(f)) {
+		    while (sc.hasNextLine()) {
+		        linhas.add(sc.nextLine());
+		    }
+		    
+		} catch (FileNotFoundException e) {
+			
+			System.err.println("Ficheiro não encontrado");
+		    return null;
+		}
 		
-		GameObject bf = BigFish.getInstance();
-		bf.setPosition(2, 2);
-		r.addObject(bf);
+		int y = 0;
+
+		for (String linha : linhas) {	//todas as linhas que guardamos 
+
+		    for (int x = 0; x < linha.length(); x++) {	// vamos ver os caracteres todos da linha
+		        char c = linha.charAt(x);
+		        Point2D pos = new Point2D(x, y);
+		        
+		        GameObject water = new Water(r);	// pomos agua em todas as posicoes do mapa 
+		        water.setPosition(pos);
+		        r.addObject(water);
+		        
+		        if (c == 'W') {
+		            GameObject w = new Wall(r);
+		            w.setPosition(pos);
+		            r.addObject(w);
+		        }
+		        else if (c == 'B') {
+		            GameObject bf = BigFish.getInstance();
+		            bf.setPosition(pos);
+		            r.addObject(bf);
+		            r.setBigFishStartingPosition(pos);
+		        }
+		        else if (c == 'S') {
+		            GameObject sf = SmallFish.getInstance();
+		            sf.setPosition(pos);
+		            r.addObject(sf);
+		            r.setSmallFishStartingPosition(pos);
+		        }
+		        else if (c == 'H') {
+		            GameObject sh = new SteelHorizontal(r);
+		            sh.setPosition(pos);
+		            r.addObject(sh);
+		        }
+		    }
+
+		    y++; // vamos ler as linhas do ficheiro
+		}
+
 		
-		GameObject sf = SmallFish.getInstance();
-		sf.setPosition(3, 3);
-		r.addObject(sf);
-		
-		return r;
+		return r;		// da return no room
 		
 	}
 	
