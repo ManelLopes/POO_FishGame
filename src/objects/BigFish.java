@@ -15,9 +15,6 @@ public class BigFish extends GameCharacter {
 		return bf;
 	}
 	
-	public void move(Direction d) {
-		
-	}
 	
 	@Override
 	public String getName() {

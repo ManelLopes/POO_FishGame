@@ -38,7 +38,24 @@ public class GameEngine implements Observer {
 
 		if (ImageGUI.getInstance().wasKeyPressed()) {
 			int k = ImageGUI.getInstance().keyPressed();
-			SmallFish.getInstance().move(Direction.directionFor(k).asVector());
+			
+			if (k == 32) {  // Codigo ASCII do espaço seu burro
+		        SmallFish.switchFish();
+		        return;
+		    }
+			
+
+			if (k == 82) {  // código ASCII para 'R'
+			    restartLevel();
+			    return;
+			}
+			
+			if(SmallFish.isActive()==true) {
+				SmallFish.getInstance().move(Direction.directionFor(k).asVector());
+				return;
+			}
+				
+			
 			BigFish.getInstance().move(Direction.directionFor(k).asVector());
 		}
 		int t = ImageGUI.getInstance().getTicks();
@@ -57,6 +74,25 @@ public class GameEngine implements Observer {
 			ImageGUI.getInstance().clearImages();
 			ImageGUI.getInstance().addImages(currentRoom.getObjects());
 		}
+	}
+	
+	private void restartLevel() {
+
+	    String roomName = currentRoom.getName();  
+	    File f = new File("./rooms/" + roomName);
+
+	    
+	    Room newRoom = Room.readRoom(f, this);
+
+	 
+	    currentRoom = newRoom;
+
+	    SmallFish.getInstance().setRoom(newRoom);
+	    BigFish.getInstance().setRoom(newRoom);
+
+	    updateGUI();
+
+	    System.out.println("Reiniciado nível: " + roomName);
 	}
 	
 }

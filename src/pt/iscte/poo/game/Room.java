@@ -128,4 +128,15 @@ public class Room {
 		
 	}
 	
+	public boolean canMoveTo(Point2D pos) {
+	    for (GameObject o : objects) {   
+	        if (o.getPosition().equals(pos)) {
+	            if (o instanceof Wall || o instanceof SteelHorizontal) { 
+	                return false;        // não pode passar
+	            }
+	        }
+	    }
+	    return true; // se não encontrou nada sólido, pode ir
+	}
+	
 }

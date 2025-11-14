@@ -6,6 +6,7 @@ import pt.iscte.poo.utils.Direction;
 public class SmallFish extends GameCharacter {
 
 	private static SmallFish sf = new SmallFish(null);
+	private static boolean isActive = true;
 	
 	private SmallFish(Room room) {
 		super(room);
@@ -15,8 +16,14 @@ public class SmallFish extends GameCharacter {
 		return sf;
 	}
 	
-	public void move(Direction d) {
-		
+	public static void switchFish() {
+		isActive = !isActive;
+		System.out.println("Agora a controlar: " + (isActive ? "SmallFish" : "BigFish"));
+	}
+	
+	
+	public static boolean isActive() {
+		return isActive;
 	}
 	
 	@Override
