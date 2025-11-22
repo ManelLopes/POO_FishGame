@@ -12,6 +12,8 @@ public abstract class GameCharacter extends GameObject {
 		super(room);
 	}
 	
+	
+	
 	public void move(Vector2D dir) {
 		Point2D pos = getPosition();
 		
