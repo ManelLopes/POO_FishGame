@@ -4,14 +4,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import objects.Water;
+import objects.Anchor;
 import objects.BigFish;
+import objects.Bomb;
+import objects.Cup;
+import objects.GameCharacter;
 import objects.GameObject;
+import objects.HoledWall;
 import objects.SmallFish;
 import pt.iscte.poo.utils.Point2D;
 import java. util. Scanner;
 import java.io.FileNotFoundException;
 import objects.Wall;
 import objects.SteelHorizontal;
+import objects.Trap;
 public class Room {
 	
 	private List<GameObject> objects;
@@ -118,6 +124,31 @@ public class Room {
 		            sh.setPosition(pos);
 		            r.addObject(sh);
 		        }
+		        else if(c == 'A') {
+		        	GameObject anchor = new Anchor(r);
+		        	anchor.setPosition(pos);
+		        	r.addObject(anchor);
+		        }
+		        else if(c == 'C') {
+		        	GameObject cup = new Cup(r);
+		        	cup.setPosition(pos);
+		        	r.addObject(cup);
+		        }
+		        else if(c == 'b') {
+		        	GameObject bomb = new Bomb(r);
+		        	bomb.setPosition(pos);;
+		        	r.addObject(bomb);
+		        }
+		        else if(c == 'X') {
+		        	GameObject holedWall = new HoledWall(r);
+		        	holedWall.setPosition(pos);
+		        	r.addObject(holedWall);
+		        }
+		        else if(c == 'T') {
+		        	GameObject trap = new Trap(r);
+		        	trap.setPosition(pos);
+		        	r.addObject(trap);
+		        }
 		    }
 
 		    y++; // vamos ler as linhas do ficheiro
@@ -129,11 +160,12 @@ public class Room {
 	}
 	
 	public boolean canMoveTo(Point2D pos) {
-	    for (GameObject o : objects) {   
+
+		for (GameObject o : objects) {   
 	        if (o.getPosition().equals(pos)) {
 	            if (o instanceof Wall || o instanceof SteelHorizontal) { 
 	                return false;        // não pode passar
-	            }
+	            } 
 	        }
 	    }
 	    return true; // se não encontrou nada sólido, pode ir
