@@ -159,6 +159,10 @@ public class Room {
 		
 	}
 	
+	public boolean canSfMoveIt(GameObject obj) {
+		return obj != null && !obj.isHeavy();// nao fiz para pesados porque eles movem tudo
+	}
+	
 	public boolean canMoveTo(Point2D pos) {
 
 		for (GameObject o : objects) {   

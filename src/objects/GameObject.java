@@ -39,4 +39,6 @@ public abstract class GameObject implements ImageTile{
 		this.room = room;
 	}
 	
+	public abstract boolean isHeavy();
+	
 }
