@@ -18,6 +18,10 @@ public class Anchor extends GameObject{
 		return 1;
 	}
 	
+	public boolean isHeavy() {
+		return true;
+	}
+	
 	
 	
 	

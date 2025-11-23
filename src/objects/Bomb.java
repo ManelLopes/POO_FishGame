@@ -18,6 +18,10 @@ public class Bomb extends GameObject{
 		return 1;
 	}
 	
+	public boolean isHeavy() {
+		return false;
+	}
+	
 	
 	
 	
