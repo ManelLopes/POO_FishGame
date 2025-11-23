@@ -74,7 +74,19 @@ public class GameEngine implements Observer {
 			}
 			if(!blocked) {
 			    BigFish.getInstance().move(dir);
+			    
+			    Point2D pos = BigFish.getInstance().getPosition();
+			    
+			    for(GameObject o: currentRoom.getObjects()) {
+			    	if(o.getPosition().equals(pos) && o instanceof objects.Trap) {
+			    		System.out.println("Game Over");
+			    		restartLevel();
+			    		return;
+			    	}
+			    }
 			}
+			
+			
 		}
 		int t = ImageGUI.getInstance().getTicks();
 		while (lastTickProcessed < t) {
