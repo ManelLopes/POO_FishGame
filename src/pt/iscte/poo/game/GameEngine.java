@@ -6,10 +6,13 @@ import java.util.Map;
 
 import objects.SmallFish;
 import objects.BigFish;
+import objects.GameObject;
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.observer.Observed;
 import pt.iscte.poo.observer.Observer;
 import pt.iscte.poo.utils.Direction;
+import pt.iscte.poo.utils.Point2D;
+import pt.iscte.poo.utils.Vector2D;
 
 public class GameEngine implements Observer {
 	
@@ -56,7 +59,22 @@ public class GameEngine implements Observer {
 			}
 				
 			
-			BigFish.getInstance().move(Direction.directionFor(k).asVector());
+			//BigFish.getInstance().move(Direction.directionFor(k).asVector());//tirei porque ele tava a mexer se 2 vezes
+			
+			Vector2D dir = Direction.directionFor(k).asVector();
+			Point2D destination = BigFish.getInstance().getPosition().plus(dir);
+			
+			Room room = BigFish.getInstance().getRoom();
+			boolean blocked = false;
+			for(GameObject o: room.getObjects()) {
+				if(o.getPosition().equals(destination) && o instanceof objects.HoledWall){
+					blocked = true;
+					break;
+				}
+			}
+			if(!blocked) {
+			    BigFish.getInstance().move(dir);
+			}
 		}
 		int t = ImageGUI.getInstance().getTicks();
 		while (lastTickProcessed < t) {
