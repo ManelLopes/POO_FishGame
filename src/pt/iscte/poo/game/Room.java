@@ -13,6 +13,8 @@ import objects.GameObject;
 import objects.HoledWall;
 import objects.SmallFish;
 import pt.iscte.poo.utils.Point2D;
+import pt.iscte.poo.utils.Vector2D;
+
 import java. util. Scanner;
 import java.io.FileNotFoundException;
 import objects.Wall;
@@ -159,8 +161,42 @@ public class Room {
 		
 	}
 	
-	public boolean canSfMoveIt(GameObject obj) {
-		return obj != null && !obj.isHeavy();// nao fiz para pesados porque eles movem tudo
+	public boolean canSfMoveIt(GameObject obj, objects.SmallFish sf) {
+		return SmallFish.isActive() && obj != null && !obj.isHeavy();// nao fiz para pesados porque eles movem tudo
+	}
+	
+	public boolean pushObject(GameCharacter fish, Vector2D dir) {
+		
+		Point2D fishPos = fish.getPosition();
+		Point2D objPos = fishPos.plus(dir);
+		
+		GameObject obj = null;
+		
+		for(GameObject o: objects) {//procurar objeto na posicao de destino
+			if(o.getPosition().equals(objPos)) {
+				obj = o;
+				break;
+			}
+		}
+		
+		if(obj == null) {
+			return false;// nao havia objeto na posicao seguinte
+		}
+		
+		Point2D nextPos = objPos.plus(dir);
+		
+		for(GameObject o:objects) {
+			if(o.getPosition().equals(nextPos)) {
+				return false;
+			}
+		}
+		
+		if(fish instanceof objects.SmallFish && !canSfMoveIt(obj, (objects.SmallFish)fish)) {
+			return false;
+		}
+		
+		obj.setPosition(nextPos);
+		return true;		
 	}
 	
 	public boolean canMoveTo(Point2D pos) {
