@@ -18,6 +18,7 @@ public class HoledWall extends GameObject{
 		return 1;
 	}
 	
+
 	
 	
 	

@@ -46,22 +46,9 @@ public class BigFish extends GameCharacter {
 		return true;
 	}
 
-//	@Override
-//	public void move(Vector2D dir) {
-//		
-//		Point2D pos = getPosition();
-//		Point2D newPos = pos.plus(dir);
-//		Room room = getRoom();
-//		
-//		for(GameObject o: room.getObjects()) {
-//			if(o.getPosition().equals(newPos) && o instanceof HoledWall) {
-//				return;
-//			}
-//		}		
-//		
-//		super.move(dir);
-//		
-//	}
+
+
+	
 	
 	
 	

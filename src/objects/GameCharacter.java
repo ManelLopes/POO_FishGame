@@ -22,6 +22,7 @@ public abstract class GameCharacter extends GameObject {
 	    if (getRoom().canMoveTo(newPos)) {  
 	        setPosition(newPos);
 	    }
+	    
 		
 	}
 

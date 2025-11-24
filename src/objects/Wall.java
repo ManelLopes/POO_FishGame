@@ -17,5 +17,7 @@ public class Wall extends GameObject {
 	public int getLayer() {
 		return 1;
 	}
+	
+
 
 }

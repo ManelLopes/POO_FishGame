@@ -166,7 +166,7 @@ public class Room {
 	    Point2D objPos = fishPos.plus(dir);
 	    GameObject obj = null;
 	    for (GameObject o : objects) {
-	        if (o.getPosition().equals(objPos)) {
+	        if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
 	            obj = o;
 	            break;
 	        }
@@ -183,21 +183,34 @@ public class Room {
 	        System.out.println("pequeno nao move obj pesado");
 	        return false;
 	    }
+	    
 
 	    // Verificar se a posição para onde o objeto vai já está ocupada
 	    for (GameObject o : objects) {
-	        if (o.getPosition().equals(nextPos)) {
+	        if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
 	            System.out.println("posicao ocupada");
 	            return false; // posição ocupada
 	        }
 	    }
 
-	    
-
 	    obj.setPosition(nextPos); 
 	    System.out.println("obj movido");
 	    return true;
 
+	}
+	
+	public GameObject getTopEntityAt(Point2D pos) {
+	    GameObject top = null;
+
+	    for (GameObject obj : objects) {
+	        if (obj.getPosition().equals(pos) && obj.getLayer() > 0) { // ignora água
+	            if (top == null || obj.getLayer() > top.getLayer()) {
+	                top = obj;
+	            }
+	        }
+	    }
+
+	    return top; // pode ser a bomba, o peixe, etc., nunca a água
 	}
 	
 	public boolean canMoveTo(Point2D pos) {

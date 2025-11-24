@@ -35,5 +35,7 @@ public class SmallFish extends GameCharacter {
 	public int getLayer() {
 		return 1;
 	}
+	
+
 
 }

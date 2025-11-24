@@ -22,6 +22,7 @@ public class Bomb extends GameObject{
 	public boolean isHeavy() {
 		return false;
 	}
+
 	
 
 	

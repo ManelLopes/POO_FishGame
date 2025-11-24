@@ -17,6 +17,9 @@ public class Trap extends GameObject{
 	public int getLayer() {
 		return 1;
 	}
+
+	
+	
 	
 	
 	
