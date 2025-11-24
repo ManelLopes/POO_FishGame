@@ -161,49 +161,85 @@ public class Room {
 		
 	}
 	
-	public boolean canSfMoveIt(GameObject obj, objects.SmallFish sf) {
-		return SmallFish.isActive() && obj != null && !obj.isHeavy();// nao fiz para pesados porque eles movem tudo
-	}
-	
+//	public boolean pushObject(GameCharacter fish, Vector2D dir) {
+//		
+//		Point2D fishPos = fish.getPosition();
+//		Point2D objPos = fishPos.plus(dir);
+//		
+//		GameObject obj = null;
+//		
+//		for(GameObject o: objects) {//procurar objeto na posicao de destino
+//			if(o.getPosition().equals(objPos)) {
+//				obj = o;
+//				break;
+//			}
+//		}
+//		
+//		if(obj == null) {
+//			return false;// nao havia objeto na posicao seguinte
+//		}
+//		
+//		Point2D nextPos = objPos.plus(dir);//posicao futura do objeto
+//		
+//		for(GameObject o: objects) {
+//			if(o.getPosition().equals(nextPos)) {
+//				return false;
+//			}
+//			if(SmallFish.isActive() && o.isHeavy()) {
+//				return false;
+//			}
+//		}
+//		
+//		
+//		
+//		obj.setPosition(nextPos);
+//		return true;		
+//	}
+
 	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-		
-		Point2D fishPos = fish.getPosition();
-		Point2D objPos = fishPos.plus(dir);
-		
-		GameObject obj = null;
-		
-		for(GameObject o: objects) {//procurar objeto na posicao de destino
-			if(o.getPosition().equals(objPos)) {
-				obj = o;
-				break;
-			}
-		}
-		
-		if(obj == null) {
-			return false;// nao havia objeto na posicao seguinte
-		}
-		
-		Point2D nextPos = objPos.plus(dir);
-		
-		for(GameObject o:objects) {
-			if(o.getPosition().equals(nextPos)) {
-				return false;
-			}
-		}
-		
-		if(fish instanceof objects.SmallFish && !canSfMoveIt(obj, (objects.SmallFish)fish)) {
-			return false;
-		}
-		
-		obj.setPosition(nextPos);
-		return true;		
+	    Point2D fishPos = fish.getPosition();
+	    Point2D objPos  = fishPos.plus(dir);
+
+	    GameObject obj = null;
+
+	    // 1) encontrar o objeto mesmo à frente do peixe
+	    for (GameObject o : objects) {
+	        if (o.getPosition().equals(objPos)) {
+	            obj = o;
+	            break;
+	        }
+	    }
+
+	    if (obj == null) {
+	        return false; // não há nada para empurrar
+	    }
+
+	    // 2) se o peixe é pequeno e o objeto é pesado, não dá
+	    if (SmallFish.isActive() && obj.isHeavy()) {
+	        return false;
+	    }
+
+	    // 3) posição futura do objeto
+	    Point2D nextPos = objPos.plus(dir);
+
+	    // ver se a casa para onde o objeto vai está ocupada
+	    for (GameObject o : objects) {
+	        if (o.getPosition().equals(nextPos)) {
+	            return false;
+	        }
+	    }
+
+	    // 4) empurra mesmo
+	    obj.setPosition(nextPos);
+	    System.out.println("Empurrei " + obj + " para " + nextPos); // debug
+	    return true;
 	}
 	
 	public boolean canMoveTo(Point2D pos) {
 
 		for (GameObject o : objects) {   
 	        if (o.getPosition().equals(pos)) {
-	            if (o instanceof Wall || o instanceof SteelHorizontal) { 
+	            if (o instanceof Wall || o instanceof SteelHorizontal || (!SmallFish.isActive() && o instanceof HoledWall) || (SmallFish.isActive() && o.isHeavy())) { 
 	                return false;        // não pode passar
 	            }
 	        }
