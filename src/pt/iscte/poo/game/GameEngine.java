@@ -52,25 +52,26 @@ public class GameEngine implements Observer {
 				return;
 			}
 
-			if (SmallFish.isActive() == true) {
-				SmallFish.getInstance().move(Direction.directionFor(k).asVector());
-				return;
-			}
+//			if (SmallFish.isActive() == true) {
+//				SmallFish.getInstance().move(Direction.directionFor(k).asVector());
+//				return;
+//			}
 
+			if (SmallFish.isActive()) {
+			    Vector2D dir = Direction.directionFor(k).asVector();
+			    Room sfRoom = SmallFish.getInstance().getRoom();
+			    sfRoom.pushObject(SmallFish.getInstance(), dir);
+			    SmallFish.getInstance().move(dir);
+			    return;
+			}
+			
 			Vector2D dir = Direction.directionFor(k).asVector();
 
-			BigFish.getInstance().move(dir);
+			//BigFish.getInstance().move(dir);
 			
-			if (SmallFish.isActive()) {
-	            Room sfRoom = SmallFish.getInstance().getRoom();
-	            sfRoom.pushObject(SmallFish.getInstance(), dir); // << Adiciona isto
-	            SmallFish.getInstance().move(dir);
-	            return;
-	        }
-
-	        Room bfRoom = BigFish.getInstance().getRoom();
-	        bfRoom.pushObject(BigFish.getInstance(), dir); // << Adiciona isto
-	        BigFish.getInstance().move(dir);
+			Room bfRoom = BigFish.getInstance().getRoom();
+			bfRoom.pushObject(BigFish.getInstance(), dir);
+			BigFish.getInstance().move(dir);
 
 			Point2D pos = BigFish.getInstance().getPosition();
 

@@ -160,79 +160,44 @@ public class Room {
 		return r;		// da return no room
 		
 	}
-	
-//	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-//		
-//		Point2D fishPos = fish.getPosition();
-//		Point2D objPos = fishPos.plus(dir);
-//		
-//		GameObject obj = null;
-//		
-//		for(GameObject o: objects) {//procurar objeto na posicao de destino
-//			if(o.getPosition().equals(objPos)) {
-//				obj = o;
-//				break;
-//			}
-//		}
-//		
-//		if(obj == null) {
-//			return false;// nao havia objeto na posicao seguinte
-//		}
-//		
-//		Point2D nextPos = objPos.plus(dir);//posicao futura do objeto
-//		
-//		for(GameObject o: objects) {
-//			if(o.getPosition().equals(nextPos)) {
-//				return false;
-//			}
-//			if(SmallFish.isActive() && o.isHeavy()) {
-//				return false;
-//			}
-//		}
-//		
-//		
-//		
-//		obj.setPosition(nextPos);
-//		return true;		
-//	}
 
 	public boolean pushObject(GameCharacter fish, Vector2D dir) {
 	    Point2D fishPos = fish.getPosition();
-	    Point2D objPos  = fishPos.plus(dir);
-
+	    Point2D objPos = fishPos.plus(dir);
 	    GameObject obj = null;
-
-	    // 1) encontrar o objeto mesmo à frente do peixe
 	    for (GameObject o : objects) {
 	        if (o.getPosition().equals(objPos)) {
 	            obj = o;
 	            break;
 	        }
 	    }
-
 	    if (obj == null) {
-	        return false; // não há nada para empurrar
+	        System.out.println("nao tem objeto no destino");
+	        return false; // não há objeto à frente
 	    }
 
-	    // 2) se o peixe é pequeno e o objeto é pesado, não dá
-	    if (SmallFish.isActive() && obj.isHeavy()) {
+	    Point2D nextPos = objPos.plus(dir);
+	    
+	 // Verifica se SmallFish pode empurrar este objeto (peso)
+	    if (fish instanceof SmallFish && obj.isHeavy()) {
+	        System.out.println("pequeno nao move obj pesado");
 	        return false;
 	    }
 
-	    // 3) posição futura do objeto
-	    Point2D nextPos = objPos.plus(dir);
-
-	    // ver se a casa para onde o objeto vai está ocupada
+	    // Verificar se a posição para onde o objeto vai já está ocupada
 	    for (GameObject o : objects) {
 	        if (o.getPosition().equals(nextPos)) {
-	            return false;
+	            System.out.println("posicao ocupada");
+	            return false; // posição ocupada
 	        }
 	    }
 
-	    // 4) empurra mesmo
-	    obj.setPosition(nextPos);
-	    System.out.println("Empurrei " + obj + " para " + nextPos); // debug
+	    
+
+	    obj.setPosition(nextPos); 
+	    System.out.println("obj movido");
 	    return true;
+
 	}
 	
 	public boolean canMoveTo(Point2D pos) {
