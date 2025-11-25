@@ -209,23 +209,23 @@ public class Room {
 
 		return top; // pode ser a bomba, o peixe, etc., nunca a água
 	}
-	
+
 	public void applyGravity() {
-		
-		for(GameObject o : objects) {
-			Point2D posBelow = o.getPosition().plus(new Vector2D(0,1));
-			if(canMoveTo(posBelow) && isOnlyWaterBelow()) {
+
+		for (GameObject o : objects) {
+			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
+			if (canMoveTo(posBelow) && isOnlyWaterBelow() && o.hasGravity()) {
 				o.setPosition(posBelow);
 				System.out.println("objeto cai");
 			}
 		}
-		
+
 	}
-	
+
 	public boolean isOnlyWaterBelow() {
-		for(GameObject o : objects) {
-			Point2D posBelow = o.getPosition().plus(new Vector2D(0,1));
-			if( instanceof Water) {
+		for (GameObject o : objects) {
+			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
+			if (o instanceof Water) {
 				return true;
 			}
 		}

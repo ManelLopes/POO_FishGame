@@ -57,16 +57,16 @@ public class GameEngine implements Observer {
 //				return;
 //			}
 			
-			for(GameObject o : currentRoom.getObjects()) {
+			//for(GameObject o : currentRoom.getObjects()) {
 				if (SmallFish.isActive()) {
 				    Vector2D dir = Direction.directionFor(k).asVector();
 				    Room sfRoom = SmallFish.getInstance().getRoom();
 				    sfRoom.pushObject(SmallFish.getInstance(), dir);
 			    	System.out.println("");
-				    if(o.hasGravity()) {
+				    //if(o.hasGravity()) {
 				    	sfRoom.applyGravity();
 				    	System.out.println("Gravidade aplicada");
-				    }
+				   // }
 				    SmallFish.getInstance().move(dir);
 				    return;
 				}
@@ -77,11 +77,11 @@ public class GameEngine implements Observer {
 				
 				Room bfRoom = BigFish.getInstance().getRoom();
 				bfRoom.pushObject(BigFish.getInstance(), dir);
-				if(o.hasGravity()) {
+				//if(o.hasGravity()) {
 					bfRoom.applyGravity();
-				}
+				//}
 				BigFish.getInstance().move(dir);
-			}
+			//}
 
 			
 
