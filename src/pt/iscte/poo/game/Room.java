@@ -185,9 +185,12 @@ public class Room {
 		// Verificar se a posição para onde o objeto vai já está ocupada
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
-				System.out.println("posicao ocupada");
-				return false; // posição ocupada
+
+				if (!obj.goesTrough(o))
+					return false;
+				System.out.println("posicao ocupada"); // posição ocupada
 			}
+
 		}
 
 		obj.setPosition(nextPos);
@@ -244,5 +247,7 @@ public class Room {
 		}
 		return true; // se não encontrou nada sólido, pode ir
 	}
+	
+	// criar um canObjMoveTo?
 
 }

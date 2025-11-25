@@ -35,6 +35,11 @@ public class Anchor extends GameObject{
 		return true;
 	}
 	
+	@Override
+	public boolean goesTrough(GameObject o) {
+		return false;
+	}
+	
 	
 	
 	

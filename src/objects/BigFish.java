@@ -45,6 +45,11 @@ public class BigFish extends GameCharacter {
 		}
 		return true;
 	}
+	
+	@Override
+	public boolean goesTrough(GameObject o) {
+		return false;
+	}
 
 
 

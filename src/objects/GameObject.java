@@ -51,5 +51,10 @@ public abstract class GameObject implements ImageTile{
 		return false;
 	}
 	
+	public boolean goesTrough(GameObject o) {
+		return false;
+	}
+
+	
 	
 }

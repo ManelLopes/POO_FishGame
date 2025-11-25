@@ -33,6 +33,13 @@ public class Bomb extends GameObject{
 		return true;
 	}
 	
+	@Override
+	public boolean goesTrough(GameObject o) {
+		if(o instanceof HoledWall)
+			return true;
+		return false;
+	}
+	
 	
 	
 	
