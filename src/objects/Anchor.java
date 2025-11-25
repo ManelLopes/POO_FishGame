@@ -22,6 +22,22 @@ public class Anchor extends GameObject{
 	public boolean isHeavy() {
 		return true;
 	}
+
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+
+	@Override
+	public boolean hasGravity() {
+		return true;
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	

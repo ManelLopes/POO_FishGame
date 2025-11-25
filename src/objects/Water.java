@@ -17,6 +17,13 @@ public class Water extends GameObject{
 	public int getLayer() {
 		return 0;
 	}
+
+	@Override
+	public boolean hasGravity() {
+		return false;
+	}
+	
+	
 	
 
 

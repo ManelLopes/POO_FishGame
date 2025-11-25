@@ -22,6 +22,20 @@ public class Cup extends GameObject{
 	public boolean isHeavy() {
 		return false;
 	}
+
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+
+	@Override
+	public boolean hasGravity() {
+		return true;
+	}
+	
+	
+	
+	
 	
 
 		

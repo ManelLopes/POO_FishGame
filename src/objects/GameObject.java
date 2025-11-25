@@ -43,5 +43,13 @@ public abstract class GameObject implements ImageTile{
 		return false;
 	}
 	
+	public boolean isMovable() {
+		return false;
+	}
+	
+	public boolean hasGravity() {
+		return false;
+	}
+	
 	
 }

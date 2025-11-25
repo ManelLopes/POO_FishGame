@@ -23,6 +23,20 @@ public class Bomb extends GameObject{
 		return false;
 	}
 
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+
+	@Override
+	public boolean hasGravity() {
+		return true;
+	}
+	
+	
+	
+	
+
 	
 
 	

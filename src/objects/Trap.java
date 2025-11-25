@@ -18,6 +18,20 @@ public class Trap extends GameObject{
 		return 1;
 	}
 
+	@Override
+	public boolean isMovable() {
+		return false;
+	}
+
+	@Override
+	public boolean hasGravity() {
+		return false;
+	}
+	
+	
+	
+	
+
 	
 	
 	

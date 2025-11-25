@@ -15,19 +15,20 @@ import objects.SmallFish;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
-import java. util. Scanner;
+import java.util.Scanner;
 import java.io.FileNotFoundException;
 import objects.Wall;
 import objects.SteelHorizontal;
 import objects.Trap;
+
 public class Room {
-	
+
 	private List<GameObject> objects;
 	private String roomName;
 	private GameEngine engine;
 	private Point2D smallFishStartingPosition;
 	private Point2D bigFishStartingPosition;
-	
+
 	public Room() {
 		objects = new ArrayList<GameObject>();
 	}
@@ -35,11 +36,11 @@ public class Room {
 	private void setName(String name) {
 		roomName = name;
 	}
-	
+
 	public String getName() {
 		return roomName;
 	}
-	
+
 	private void setEngine(GameEngine engine) {
 		this.engine = engine;
 	}
@@ -48,12 +49,12 @@ public class Room {
 		objects.add(obj);
 		engine.updateGUI();
 	}
-	
+
 	public void removeObject(GameObject obj) {
 		objects.remove(obj);
 		engine.updateGUI();
 	}
-	
+
 	public List<GameObject> getObjects() {
 		return objects;
 	}
@@ -61,168 +62,187 @@ public class Room {
 	public void setSmallFishStartingPosition(Point2D heroStartingPosition) {
 		this.smallFishStartingPosition = heroStartingPosition;
 	}
-	
+
 	public Point2D getSmallFishStartingPosition() {
 		return smallFishStartingPosition;
 	}
-	
+
 	public void setBigFishStartingPosition(Point2D heroStartingPosition) {
 		this.bigFishStartingPosition = heroStartingPosition;
 	}
-	
+
 	public Point2D getBigFishStartingPosition() {
 		return bigFishStartingPosition;
 	}
-	
+
 	public static Room readRoom(File f, GameEngine engine) {
 		Room r = new Room();
 		r.setEngine(engine);
 		r.setName(f.getName());
-		
+
 		List<String> linhas = new ArrayList<>();
 
 		try (Scanner sc = new Scanner(f)) {
-		    while (sc.hasNextLine()) {
-		        linhas.add(sc.nextLine());
-		    }
-		    
+			while (sc.hasNextLine()) {
+				linhas.add(sc.nextLine());
+			}
+
 		} catch (FileNotFoundException e) {
-			
+
 			System.err.println("Ficheiro não encontrado");
-		    return null;
+			return null;
 		}
-		
+
 		int y = 0;
 
-		for (String linha : linhas) {	//todas as linhas que guardamos 
+		for (String linha : linhas) { // todas as linhas que guardamos
 
-		    for (int x = 0; x < linha.length(); x++) {	// vamos ver os caracteres todos da linha
-		        char c = linha.charAt(x);
-		        Point2D pos = new Point2D(x, y);
-		        
-		        GameObject water = new Water(r);	// pomos agua em todas as posicoes do mapa 
-		        water.setPosition(pos);
-		        r.addObject(water);
-		        
-		        if (c == 'W') {
-		            GameObject w = new Wall(r);
-		            w.setPosition(pos);
-		            r.addObject(w);
-		        }
-		        else if (c == 'B') {
-		            GameObject bf = BigFish.getInstance();
-		            bf.setPosition(pos);
-		            r.addObject(bf);
-		            r.setBigFishStartingPosition(pos);
-		        }
-		        else if (c == 'S') {
-		            GameObject sf = SmallFish.getInstance();
-		            sf.setPosition(pos);
-		            r.addObject(sf);
-		            r.setSmallFishStartingPosition(pos);
-		        }
-		        else if (c == 'H') {
-		            GameObject sh = new SteelHorizontal(r);
-		            sh.setPosition(pos);
-		            r.addObject(sh);
-		        }
-		        else if(c == 'A') {
-		        	GameObject anchor = new Anchor(r);
-		        	anchor.setPosition(pos);
-		        	r.addObject(anchor);
-		        }
-		        else if(c == 'C') {
-		        	GameObject cup = new Cup(r);
-		        	cup.setPosition(pos);
-		        	r.addObject(cup);
-		        }
-		        else if(c == 'b') {
-		        	GameObject bomb = new Bomb(r);
-		        	bomb.setPosition(pos);;
-		        	r.addObject(bomb);
-		        }
-		        else if(c == 'X') {
-		        	GameObject holedWall = new HoledWall(r);
-		        	holedWall.setPosition(pos);
-		        	r.addObject(holedWall);
-		        }
-		        else if(c == 'T') {
-		        	GameObject trap = new Trap(r);
-		        	trap.setPosition(pos);
-		        	r.addObject(trap);
-		        }
-		    }
+			for (int x = 0; x < linha.length(); x++) { // vamos ver os caracteres todos da linha
+				char c = linha.charAt(x);
+				Point2D pos = new Point2D(x, y);
 
-		    y++; // vamos ler as linhas do ficheiro
+				GameObject water = new Water(r); // pomos agua em todas as posicoes do mapa
+				water.setPosition(pos);
+				r.addObject(water);
+
+				if (c == 'W') {
+					GameObject w = new Wall(r);
+					w.setPosition(pos);
+					r.addObject(w);
+				} else if (c == 'B') {
+					GameObject bf = BigFish.getInstance();
+					bf.setPosition(pos);
+					r.addObject(bf);
+					r.setBigFishStartingPosition(pos);
+				} else if (c == 'S') {
+					GameObject sf = SmallFish.getInstance();
+					sf.setPosition(pos);
+					r.addObject(sf);
+					r.setSmallFishStartingPosition(pos);
+				} else if (c == 'H') {
+					GameObject sh = new SteelHorizontal(r);
+					sh.setPosition(pos);
+					r.addObject(sh);
+				} else if (c == 'A') {
+					GameObject anchor = new Anchor(r);
+					anchor.setPosition(pos);
+					r.addObject(anchor);
+				} else if (c == 'C') {
+					GameObject cup = new Cup(r);
+					cup.setPosition(pos);
+					r.addObject(cup);
+				} else if (c == 'b') {
+					GameObject bomb = new Bomb(r);
+					bomb.setPosition(pos);
+					;
+					r.addObject(bomb);
+				} else if (c == 'X') {
+					GameObject holedWall = new HoledWall(r);
+					holedWall.setPosition(pos);
+					r.addObject(holedWall);
+				} else if (c == 'T') {
+					GameObject trap = new Trap(r);
+					trap.setPosition(pos);
+					r.addObject(trap);
+				}
+			}
+
+			y++; // vamos ler as linhas do ficheiro
 		}
 
-		
-		return r;		// da return no room
-		
+		return r; // da return no room
+
 	}
 
 	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-	    Point2D fishPos = fish.getPosition();
-	    Point2D objPos = fishPos.plus(dir);
-	    GameObject obj = null;
-	    for (GameObject o : objects) {
-	        if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
-	            obj = o;
-	            break;
-	        }
-	    }
-	    if (obj == null) {
-	        System.out.println("nao tem objeto no destino");
-	        return false; // não há objeto à frente
-	    }
+		Point2D fishPos = fish.getPosition();
+		Point2D objPos = fishPos.plus(dir);
+		GameObject obj = null;
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
+				obj = o;
+				break;
+			}
+		}
+		if (obj == null) {
+			System.out.println("nao tem objeto no destino");
+			return false; // não há objeto à frente
+		}
 
-	    Point2D nextPos = objPos.plus(dir);
-	    
-	 // Verifica se SmallFish pode empurrar este objeto (peso)
-	    if (fish instanceof SmallFish && obj.isHeavy()) {
-	        System.out.println("pequeno nao move obj pesado");
-	        return false;
-	    }
-	    
+		if (!obj.isMovable()) {
+			System.out.println("nao pode mover este tipo de objetos");
+			return false;
+		}
 
-	    // Verificar se a posição para onde o objeto vai já está ocupada
-	    for (GameObject o : objects) {
-	        if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
-	            System.out.println("posicao ocupada");
-	            return false; // posição ocupada
-	        }
-	    }
+		Point2D nextPos = objPos.plus(dir);
 
-	    obj.setPosition(nextPos); 
-	    System.out.println("obj movido");
-	    return true;
+		// Verifica se SmallFish pode empurrar este objeto (peso)
+		if (fish instanceof SmallFish && obj.isHeavy()) {
+			System.out.println("pequeno nao move obj pesado");
+			return false;
+		}
+
+		// Verificar se a posição para onde o objeto vai já está ocupada
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
+				System.out.println("posicao ocupada");
+				return false; // posição ocupada
+			}
+		}
+
+		obj.setPosition(nextPos);
+		System.out.println("obj movido");
+		return true;
 
 	}
-	
+
 	public GameObject getTopEntityAt(Point2D pos) {
-	    GameObject top = null;
+		GameObject top = null;
 
-	    for (GameObject obj : objects) {
-	        if (obj.getPosition().equals(pos) && obj.getLayer() > 0) { // ignora água
-	            if (top == null || obj.getLayer() > top.getLayer()) {
-	                top = obj;
-	            }
-	        }
-	    }
+		for (GameObject obj : objects) {
+			if (obj.getPosition().equals(pos) && obj.getLayer() > 0) { // ignora água
+				if (top == null || obj.getLayer() > top.getLayer()) {
+					top = obj;
+				}
+			}
+		}
 
-	    return top; // pode ser a bomba, o peixe, etc., nunca a água
+		return top; // pode ser a bomba, o peixe, etc., nunca a água
 	}
 	
+	public void applyGravity() {
+		
+		for(GameObject o : objects) {
+			Point2D posBelow = o.getPosition().plus(new Vector2D(0,1));
+			if(canMoveTo(posBelow) && isOnlyWaterBelow()) {
+				o.setPosition(posBelow);
+				System.out.println("objeto cai");
+			}
+		}
+		
+	}
+	
+	public boolean isOnlyWaterBelow() {
+		for(GameObject o : objects) {
+			Point2D posBelow = o.getPosition().plus(new Vector2D(0,1));
+			if( instanceof Water) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean canMoveTo(Point2D pos) {
 
-		for (GameObject o : objects) {   
-	        if (o.getPosition().equals(pos)) {
-	            if (o instanceof Wall || o instanceof SteelHorizontal || (!SmallFish.isActive() && o instanceof HoledWall) || (SmallFish.isActive() && o.isHeavy())) { 
-	                return false;        // não pode passar
-	            }
-	        }
-	    }
-	    return true; // se não encontrou nada sólido, pode ir
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(pos)) {
+				if (o instanceof Wall || o instanceof SteelHorizontal
+						|| (!SmallFish.isActive() && o instanceof HoledWall) || (SmallFish.isActive() && o.isHeavy())) {
+					return false; // não pode passar
+				}
+			}
+		}
+		return true; // se não encontrou nada sólido, pode ir
 	}
-	
+
 }
