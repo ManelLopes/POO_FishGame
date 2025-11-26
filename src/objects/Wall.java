@@ -27,11 +27,6 @@ public class Wall extends GameObject {
 	public boolean hasGravity() {
 		return false;
 	}
-	
-	
-	
-	
-	
 
 
 }

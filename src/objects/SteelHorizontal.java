@@ -27,11 +27,7 @@ public class SteelHorizontal extends GameObject {
 	public boolean hasGravity() {
 		return false;
 	}
-	
-	
-	
-	
-	
+
 
 
 }

@@ -39,12 +39,6 @@ public class Cup extends GameObject{
 			return true;
 		return false;
 	}
-	
-	
-	
-	
-	
-	
 
 		
 	

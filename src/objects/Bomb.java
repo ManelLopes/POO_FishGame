@@ -39,16 +39,7 @@ public class Bomb extends GameObject{
 			return true;
 		return false;
 	}
-	
-	
-	
-	
 
-	
 
-	
-	
-	
-	
 	
 }

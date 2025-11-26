@@ -27,14 +27,7 @@ public class HoledWall extends GameObject{
 	public boolean hasGravity() {
 		return false;
 	}
-	
-	
-	
-	
-	
 
-	
-	
 	
 	
 }

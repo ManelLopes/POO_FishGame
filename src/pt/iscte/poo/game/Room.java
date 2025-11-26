@@ -303,7 +303,7 @@ public class Room {
 
 		for (GameObject o : objects) {
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
-			if ( o.hasGravity() && canObjMoveTo(o, posBelow)) {
+			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
 				System.out.println("objeto cai");
 			}
@@ -333,6 +333,9 @@ public class Room {
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
 				if ((obj.isHeavy() && o instanceof HoledWall) || o instanceof Trap || o instanceof Wall || o instanceof SteelHorizontal) {
+					return false;
+				}
+				if(!(o instanceof Water) && !(o instanceof HoledWall)) {
 					return false;
 				}
 			}
