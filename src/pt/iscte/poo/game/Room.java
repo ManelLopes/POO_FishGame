@@ -217,7 +217,7 @@ public class Room {
 
 		for (GameObject o : objects) {
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
-			if (canMoveTo(posBelow) && o.hasGravity()) {
+			if (canMoveTo(posBelow) && o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
 				System.out.println("objeto cai");
 			}
@@ -225,28 +225,31 @@ public class Room {
 
 	}
 
-//	public boolean isOnlyWaterBelow() {
-//		for (GameObject o : objects) {
-//			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
-//			if (o instanceof Water) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-
 	public boolean canMoveTo(Point2D pos) {
 
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
-				if (o instanceof Wall || o instanceof SteelHorizontal
-						|| (!SmallFish.isActive() && o instanceof HoledWall) || (SmallFish.isActive() && o.isHeavy())
-						|| (!(o instanceof Water) && !(o instanceof HoledWall))) {
+				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())) {
 					return false; // não pode passar
 				}
 			}
 		}
 		return true; // se não encontrou nada sólido, pode ir
+	}
+
+	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
+
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(pos)) {
+				if (obj.isHeavy() && o instanceof HoledWall) {
+					return false;
+				}
+				if (!obj.goesTrough(o) && o instanceof HoledWall) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// criar um canObjMoveTo?
