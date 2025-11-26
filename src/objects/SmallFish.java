@@ -33,7 +33,7 @@ public class SmallFish extends GameCharacter {
 
 	@Override
 	public int getLayer() {
-		return 1;
+		return 2;
 	}
 	
 	@Override

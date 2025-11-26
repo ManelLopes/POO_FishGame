@@ -154,51 +154,136 @@ public class Room {
 
 	}
 
+//	public boolean pushObject(GameCharacter fish, Vector2D dir) {
+//		Point2D fishPos = fish.getPosition();
+//		Point2D objPos = fishPos.plus(dir);
+//		GameObject obj = null;
+//		for (GameObject o : objects) {
+//			if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
+//				obj = o;
+//				break;
+//			}
+//		}
+//		if (obj == null) {
+//			System.out.println("nao tem objeto no destino");
+//			return false; // não há objeto à frente
+//		}
+//
+//		if (!obj.isMovable()) {
+//			System.out.println("nao pode mover este tipo de objetos");
+//			return false;
+//		}
+//
+//		Point2D nextPos = objPos.plus(dir);
+//
+//		// Verifica se SmallFish pode empurrar este objeto (peso)
+//		if (fish instanceof SmallFish && obj.isHeavy()) {
+//			System.out.println("pequeno nao move obj pesado");
+//			return false;
+//		}
+//
+//		// Verificar se a posição para onde o objeto vai já está ocupada
+//		for (GameObject o : objects) {
+//			if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
+//
+//				if (!obj.goesTrough(o)) {
+//					System.out.println("posicao ocupada"); // posição ocupada
+//					return false;
+//				}
+//			}
+//
+//		}
+//
+//		obj.setPosition(nextPos);
+//		System.out.println("obj movido");
+//		return true;
+//
+//	}
+
 	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-		Point2D fishPos = fish.getPosition();
-		Point2D objPos = fishPos.plus(dir);
-		GameObject obj = null;
-		for (GameObject o : objects) {
-			if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
-				obj = o;
-				break;
-			}
-		}
-		if (obj == null) {
-			System.out.println("nao tem objeto no destino");
-			return false; // não há objeto à frente
-		}
+	    Point2D fishPos = fish.getPosition();
+	    Point2D objPos = fishPos.plus(dir);
 
-		if (!obj.isMovable()) {
-			System.out.println("nao pode mover este tipo de objetos");
-			return false;
-		}
-		
+	    // 1º objeto à frente do peixe
+	    GameObject obj = null;
+	    for (GameObject o : objects) {
+	        if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
+	            obj = o;
+	            break;
+	        }
+	    }
+	    if (obj == null) {
+	        System.out.println("nao tem objeto no destino");
+	        return false; // não há objeto à frente
+	    }
 
-		Point2D nextPos = objPos.plus(dir);
+	    if (!obj.isMovable()) {
+	        System.out.println("nao pode mover este tipo de objetos");
+	        return false;
+	    }
 
-		// Verifica se SmallFish pode empurrar este objeto (peso)
-		if (fish instanceof SmallFish && obj.isHeavy()) {
-			System.out.println("pequeno nao move obj pesado");
-			return false;
-		}
+	    // SmallFish não empurra objetos pesados
+	    if (fish instanceof SmallFish && obj.isHeavy()) {
+	        System.out.println("pequeno nao move obj pesado");
+	        return false;
+	    }
 
-		// Verificar se a posição para onde o objeto vai já está ocupada
-		for (GameObject o : objects) {
-			if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
+	    Point2D nextPos = objPos.plus(dir);
 
-				if (!obj.goesTrough(o))
-					return false;
-				System.out.println("posicao ocupada"); // posição ocupada
-			}
+	    // Tentar descobrir um 2º objeto logo a seguir ao primeiro
+	    GameObject second = null;
+	    for (GameObject o : objects) {
+	        if (o.getPosition().equals(nextPos) && o.getLayer() == 1 && !(o instanceof Water)) {
+	            second = o;
+	            break;
+	        }
+	    }
 
-		}
+	    // ---- CASO COM 2 OBJETOS EM LINHA ----
+	    if (second != null) {
+	        // se o segundo não for movível, bloqueia
+	        if (!second.isMovable()) {
+	            System.out.println("2º objeto nao é movivel");
+	            return false;
+	        }
+	        // se algum for pesado e o peixe for pequeno, não empurra
+	        if (fish instanceof SmallFish && second.isHeavy()) {
+	            System.out.println("pequeno nao move cadeia com objeto pesado");
+	            return false;
+	        }
+	        Point2D secondNext = nextPos.plus(dir);
+	        // Verificar se a casa depois do 2º está livre/atravessável
+	        for (GameObject o : objects) {
+	            if (o.getPosition().equals(secondNext) && !(o instanceof Water)) {
+	                if (!second.goesTrough(o)) {
+	                    System.out.println("2º objeto bloqueado no destino");
+	                    return false;
+	                }
+	            }
+	        }
+	        // Movimento em cadeia: mexer primeiro o 2º, depois o 1º
+	        second.setPosition(secondNext);
+	        obj.setPosition(nextPos);
+	        System.out.println("2 objetos movidos");
+	        return true;
+	    }
 
-		obj.setPosition(nextPos);
-		System.out.println("obj movido");
-		return true;
+	    // ---- CASO NORMAL: SÓ 1 OBJETO ----
+	    // Verificar se a posição para onde o objeto vai já está ocupada
+	    for (GameObject o : objects) {
+	        if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
+	            if (!obj.goesTrough(o)) {
+	                System.out.println("posicao ocupada");
+	                return false;
+	            }
+	        }
+	    }
 
+	    obj.setPosition(nextPos);
+	    System.out.println("obj movido");
+	    return true;
 	}
+
 
 	public GameObject getTopEntityAt(Point2D pos) {
 		GameObject top = null;
@@ -218,7 +303,7 @@ public class Room {
 
 		for (GameObject o : objects) {
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
-			if (canMoveTo(posBelow) && o.hasGravity() && canObjMoveTo(o, posBelow)) {
+			if ( o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
 				System.out.println("objeto cai");
 			}
@@ -226,43 +311,33 @@ public class Room {
 
 	}
 
-	public boolean canMoveTo(Point2D pos) {
-			
+	public boolean canMoveTo(GameCharacter fish, Point2D pos) {
+		
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
 				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())
-						|| (!(o instanceof Water) && !(o instanceof HoledWall))) {
+						|| (!(o instanceof Water) && !(o instanceof HoledWall) && !(o instanceof Trap))) {
 					return false; // não pode passar
 				}
+				if(o instanceof HoledWall) {
+					return fish instanceof SmallFish;
+				}
+				
 			}
 		}
+
 		return true; // se não encontrou nada sólido, pode ir
 	}
 
 	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
-
-				if (obj.isHeavy() && o instanceof HoledWall) {
+				if ((obj.isHeavy() && o instanceof HoledWall) || o instanceof Trap || o instanceof Wall || o instanceof SteelHorizontal) {
 					return false;
 				}
 			}
 		}
 		return true;
 	}
-
-//	public boolean canFishGoThrough(GameCharacter character,GameObject obj) {
-//		
-////		for(GameObject o : objects) {
-////			if(o.getPosition().equals(pos))
-////		}
-//		if(character.equals(BigFish.getInstance()) && obj instanceof HoledWall) {
-//			return false;
-//		}
-//		return true;
-//		
-//	}
-
-	// criar um canObjMoveTo?
 
 }

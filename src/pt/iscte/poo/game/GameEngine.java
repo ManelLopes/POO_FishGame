@@ -67,7 +67,7 @@ public class GameEngine implements Observer {
 //				    	sfRoom.applyGravity();
 				    	System.out.println("Gravidade aplicada");
 				   // }
-				    SmallFish.getInstance().move(dir);
+				    SmallFish.getInstance().move(SmallFish.getInstance(),dir);
 				    return;
 				}
 				
@@ -80,7 +80,7 @@ public class GameEngine implements Observer {
 				//if(o.hasGravity()) {
 //					bfRoom.applyGravity();
 				//}
-				BigFish.getInstance().move(dir);
+				BigFish.getInstance().move(BigFish.getInstance(),dir);
 			//}
 
 			
