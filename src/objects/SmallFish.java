@@ -38,7 +38,7 @@ public class SmallFish extends GameCharacter {
 	
 	@Override
 	public boolean goesTrough(GameObject o) {
-		return false;
+		return true;
 	}
 	
 

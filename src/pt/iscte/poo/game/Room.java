@@ -173,6 +173,7 @@ public class Room {
 			System.out.println("nao pode mover este tipo de objetos");
 			return false;
 		}
+		
 
 		Point2D nextPos = objPos.plus(dir);
 
@@ -226,10 +227,11 @@ public class Room {
 	}
 
 	public boolean canMoveTo(Point2D pos) {
-
+			
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
-				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())) {
+				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())
+						|| (!(o instanceof Water) && !(o instanceof HoledWall))) {
 					return false; // não pode passar
 				}
 			}
@@ -238,19 +240,28 @@ public class Room {
 	}
 
 	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
-
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
+
 				if (obj.isHeavy() && o instanceof HoledWall) {
-					return false;
-				}
-				if (!obj.goesTrough(o) && o instanceof HoledWall) {
 					return false;
 				}
 			}
 		}
 		return true;
 	}
+
+//	public boolean canFishGoThrough(GameCharacter character,GameObject obj) {
+//		
+////		for(GameObject o : objects) {
+////			if(o.getPosition().equals(pos))
+////		}
+//		if(character.equals(BigFish.getInstance()) && obj instanceof HoledWall) {
+//			return false;
+//		}
+//		return true;
+//		
+//	}
 
 	// criar um canObjMoveTo?
 
