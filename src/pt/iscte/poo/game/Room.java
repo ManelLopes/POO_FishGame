@@ -325,6 +325,7 @@ public class Room {
 		return true;
 	}
 
+
 //	public boolean checkObjectsOnTop(GameCharacter fish) {
 //
 //		Point2D pos = fish.getPosition();
@@ -332,125 +333,147 @@ public class Room {
 //		int light = 0;
 //
 //		Point2D upperPos = pos.plus(new Vector2D(0, -1));
-//		
-//		List<GameObject> objectChain = new ArrayList<>();
 //
+//		// 1) CONTAR OBJETOS ACIMA
 //		while (true) {
-//			//boolean foundSomething = false;
+//
+//			GameObject objOnTop = null;
 //
 //			for (GameObject o : objects) {
 //				if (o.getPosition().equals(upperPos)) {
-//					if (o.isMovable()) {
-//						if (o.isHeavy()) {
-//							heavy++;
-//							System.out.println("pesado aumenta" + heavy);
-//						} else {
-//							light++;
-//						}
-//					}
+//					objOnTop = o;
+//					break;
 //				}
 //			}
 //
-////			if(!foundSomething) {
-////				break;
-////			}
+//			// nada nesta posição → acabou a pilha
+//			if (objOnTop == null) {
+//				break;
+//			}
 //
+//			// parede / aço / etc → bloqueia tudo → não interessa o que vem acima
+//			if (!objOnTop.isMovable()) {
+//				break;
+//			}
+//
+//			// objeto movível → contar leve/pesado
+//			if (objOnTop.isHeavy()) {
+//				heavy++;
+//				System.out.println("pesado aumenta " + heavy);
+//			} else {
+//				light++;
+//				System.out.println("leve aumenta " + light);
+//			}
+//
+//			// próxima posição acima
 //			upperPos = upperPos.plus(new Vector2D(0, -1));
-//
-//			if (fish instanceof BigFish) {
-//
-//				if (heavy > 1) {
-//					System.out.println("mais que 1 pesado");
-//					return false;
-//				}
-//				if (heavy == 1 && light >= 1) {
-//					System.out.println("1 pesado e vários leves");
-//					return false;
-//				}
-//
-//				return true;
-//
-//			}
-//
-//			if (fish instanceof SmallFish) {
-//
-//				if (light > 1 && heavy > 0) {
-//					return false;
-//				}
-//				return true;
-//			}
-//
 //		}
 //
+//		// 2) APLICAR AS REGRAS
+//
+//		if (fish instanceof SmallFish) {
+//			// morre se tiver 1 pesado OU 2 leves
+//			if (heavy >= 1 || light >= 2) {
+//				System.out.println("SmallFish esmagado: heavy=" + heavy + " light=" + light);
+//				return false;
+//			}
+//			return true;
+//		}
+//		
+//		if (fish instanceof BigFish) {
+//			// morre se tiver 2 ou mais objetos
+//			if (heavy + light >= 2) {
+//				System.out.println("BigFish esmagado: heavy=" + heavy + " light=" + light);
+//				return false;
+//			}
+//			return true;
+//		}
+//
+//		
+//		return true;
+//
 //	}
-
+	
 	public boolean checkObjectsOnTop(GameCharacter fish) {
 
-		Point2D pos = fish.getPosition();
-		int heavy = 0;
-		int light = 0;
+		System.out.println("checkObjectsOnTop chamado para: " + fish.getClass().getSimpleName() +
+                " na pos " + fish.getPosition());
+		
+	    Point2D pos = fish.getPosition();
+	    int heavy = 0;
+	    int light = 0;
 
-		Point2D upperPos = pos.plus(new Vector2D(0, -1));
+	    // começamos logo acima do peixe
+	    Point2D upperPos = pos.plus(new Vector2D(0, -1));
 
-		// 1) CONTAR OBJETOS ACIMA
-		while (true) {
+	    while (true) {
 
-			GameObject objOnTop = null;
+	        GameObject objOnTop = null;
 
-			for (GameObject o : objects) {
-				if (o.getPosition().equals(upperPos)) {
-					objOnTop = o;
-					break;
-				}
-			}
+	        // procurar objeto EXACTAMENTE em upperPos
+	        for (GameObject o : objects) {
+	            if (o.getPosition().equals(upperPos)) {
+	                objOnTop = o;
+	                break;
+	            }
+	        }
 
-			// nada nesta posição → acabou a pilha
-			if (objOnTop == null) {
-				break;
-			}
+	        // se não há nada nessa posição → acabou a pilha
+	        if (objOnTop == null) {
+	            break;
+	        }
 
-			// parede / aço / etc → bloqueia tudo → não interessa o que vem acima
-			if (!objOnTop.isMovable()) {
-				break;
-			}
+	        // se não é movível (parede, aço, etc.) → bloqueia, paramos aqui
+	        if (!objOnTop.isMovable()) {
+	            break;
+	        }
 
-			// objeto movível → contar leve/pesado
-			if (objOnTop.isHeavy()) {
-				heavy++;
-				System.out.println("pesado aumenta " + heavy);
-			} else {
-				light++;
-				System.out.println("leve aumenta " + light);
-			}
+	        // contar leves/pesados
+	        if (objOnTop.isHeavy()) {
+	            heavy++;
+	        } else {
+	            light++;
+	        }
 
-			// próxima posição acima
-			upperPos = upperPos.plus(new Vector2D(0, -1));
-		}
+	        // vamos ver a próxima posição acima
+	        upperPos = upperPos.plus(new Vector2D(0, -1));
+	    }
 
-		// 2) APLICAR AS REGRAS
+	    // ---------- REGRAS ----------
 
-		if (fish instanceof BigFish) {
-			// morre se tiver 2 ou mais objetos
-			if (heavy + light >= 2) {
-				System.out.println("BigFish esmagado: heavy=" + heavy + " light=" + light);
-				return false;
-			}
-			return true;
-		}
+	    // BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
+	    if (fish instanceof BigFish) {
+	        if (heavy + light >= 2) {
+	            return false;   // esmagado
+	        }
+	        return true;        // seguro
+	    }
 
-		if (fish instanceof SmallFish) {
-			// morre se tiver 1 pesado OU 2 leves
-			if (heavy >= 1 || light >= 2) {
-				System.out.println("SmallFish esmagado: heavy=" + heavy + " light=" + light);
-				return false;
-			}
-			return true;
-		}
-		return true;
+	    // SMALL FISH: morre se tiver 1 pesado OU 2 leves
+	    if (fish instanceof SmallFish) {
+	        if (heavy >= 1) return false;  // algum pesado
+	        if (light >= 2) return false;  // 2 ou mais leves
+	        return true;                   // caso contrário, está seguro
+	    }
 
+	    // outros objetos (se houver) nunca são esmagados
+	    return true;
 	}
 
-	// por defeito, seguro
+	public boolean someFishIsCrushed() {
+
+		if (!checkObjectsOnTop(BigFish.getInstance())) {
+			System.out.println("peixe grande esmagado");
+			return true;
+		}
+		if (!checkObjectsOnTop(SmallFish.getInstance())) {
+			System.out.println("peixe pequeno esmagado");
+			return true;
+		}
+
+		return false;
+
+	}
 
 	public GameObject getTopEntityAt(Point2D pos) {
 		GameObject top = null;
@@ -472,7 +495,6 @@ public class Room {
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
 			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
-				// System.out.println("objeto cai");
 			}
 		}
 
