@@ -25,9 +25,10 @@ public class Anchor extends GameObject{
 
 	@Override
 	public boolean isMovable() {
-		if(!SmallFish.isActive())
-			return true;
-		return false;
+//		if(!SmallFish.isActive())
+//			return true;
+//		return false;
+		return true;
 	}
 
 	@Override

@@ -414,29 +414,35 @@ public class Room {
 	        for (GameObject o : objects) {
 	            if (o.getPosition().equals(upperPos)) {
 	                objOnTop = o;
+	            	System.out.println("aqui1");
 	                break;
 	            }
 	        }
 
 	        // se não há nada nessa posição → acabou a pilha
 	        if (objOnTop == null) {
+	        	System.out.println("aqui2");
 	            break;
 	        }
 
 	        // se não é movível (parede, aço, etc.) → bloqueia, paramos aqui
 	        if (!objOnTop.isMovable()) {
+	        	System.out.println("aqui3");
 	            break;
 	        }
 
 	        // contar leves/pesados
 	        if (objOnTop.isHeavy()) {
+	        	System.out.println("aqui4");
 	            heavy++;
 	        } else {
+	        	System.out.println("aqui5");
 	            light++;
 	        }
 
 	        // vamos ver a próxima posição acima
 	        upperPos = upperPos.plus(new Vector2D(0, -1));
+	        
 	    }
 
 	    // ---------- REGRAS ----------
@@ -444,6 +450,7 @@ public class Room {
 	    // BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
 	    if (fish instanceof BigFish) {
 	        if (heavy + light >= 2) {
+	        	System.out.println("peixe grande esmagado");
 	            return false;   // esmagado
 	        }
 	        return true;        // seguro
@@ -451,12 +458,20 @@ public class Room {
 
 	    // SMALL FISH: morre se tiver 1 pesado OU 2 leves
 	    if (fish instanceof SmallFish) {
-	        if (heavy >= 1) return false;  // algum pesado
-	        if (light >= 2) return false;  // 2 ou mais leves
+	        if (heavy >= 1) {
+	        	System.out.println("peixe pequeno esmagado");
+	        	return false;  // algum pesado
+	        }
+	        if (light >= 2) {
+	        	System.out.println("peixe pequeno esmagado");
+	        	return false;  // 2 ou mais leves
+	        }
 	        return true;                   // caso contrário, está seguro
 	    }
 
 	    // outros objetos (se houver) nunca são esmagados
+    	System.out.println("aqui");
+
 	    return true;
 	}
 
