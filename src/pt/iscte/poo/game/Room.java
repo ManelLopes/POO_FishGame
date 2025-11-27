@@ -265,6 +265,11 @@ public class Room {
 	        System.out.println("nao tem objeto no destino");
 	        return false;
 	    }
+	    
+	    if (fish instanceof BigFish && dir.getY() < 0 && objectChain.size() > 1) {
+	        System.out.println("bigFish nao pode empurrar mais que 1 objeto para cima");
+	        return false;
+	    }
 
 	    // 2) Regra: SmallFish só pode empurrar 1 objeto
 	    if (fish instanceof SmallFish && objectChain.size() > 1) {
@@ -307,6 +312,67 @@ public class Room {
 
 	    System.out.println(objectChain.size() + " objetos movidos");
 	    return true;
+	}
+	
+	public boolean checkObjectsOnTop(GameCharacter fish) {
+		
+		Point2D pos = fish.getPosition();
+		int heavy = 0;
+		int light = 0;
+		
+		Point2D upperPos = pos.plus(new Vector2D(0,-1));
+		
+		while(true) {
+			
+			boolean foundSomething = false;
+			
+			for(GameObject o : objects) {
+				if(o.getPosition().equals(upperPos)) {
+					if(o instanceof Wall || o instanceof SteelHorizontal) {
+						foundSomething = true;
+						break;
+					}
+					if(o.isMovable()) {
+						if(o.isHeavy()) {
+							heavy++;
+						}else {
+							light++;
+						}
+					}
+				}
+			}
+			
+			if(!foundSomething) {
+				break;
+			}
+			
+			upperPos = upperPos.plus(new Vector2D(0,-1));
+			
+		}
+		
+		if(fish instanceof BigFish) {
+			
+			if(heavy > 1) {
+				return false;
+			}
+			if(heavy == 1 && light >= 1) {
+				return false;
+			}
+			
+			return true;
+			
+		}
+		
+		if(fish instanceof SmallFish) {
+			
+			if(light <= 1 && heavy == 0) {
+				return true;
+			}
+			return false;		
+		}
+		
+		return true;
+		
 	}
 
 
