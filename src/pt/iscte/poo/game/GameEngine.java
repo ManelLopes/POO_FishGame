@@ -56,8 +56,6 @@ public class GameEngine implements Observer {
 				Vector2D dir = Direction.directionFor(k).asVector();
 				Room sfRoom = SmallFish.getInstance().getRoom();
 				sfRoom.pushObject(SmallFish.getInstance(), dir);
-				System.out.println("");
-				System.out.println("Gravidade aplicada");
 				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
 				if (!currentRoom.checkObjectsOnTop(SmallFish.getInstance())) {
 					restartLevel();
@@ -92,7 +90,14 @@ public class GameEngine implements Observer {
 		while (lastTickProcessed < t) {
 			processTick();
 			currentRoom.applyGravity();
+
 		}
+		
+		if (!currentRoom.checkObjectsOnTop(BigFish.getInstance()) ||
+			    !currentRoom.checkObjectsOnTop(SmallFish.getInstance())) {
+			    restartLevel();
+			    return;
+			}
 		ImageGUI.getInstance().update();
 	}
 

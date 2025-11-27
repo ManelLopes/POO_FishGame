@@ -25,7 +25,7 @@ public class Water extends GameObject{
 	
 	@Override
 	public boolean isMovable() {
-		return true;
+		return false;
 	}
 	
 
