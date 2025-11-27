@@ -19,7 +19,9 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import objects.Wall;
 import objects.SteelHorizontal;
+import objects.Stone;
 import objects.Trap;
+import objects.Trunk;
 
 public class Room {
 
@@ -144,7 +146,17 @@ public class Room {
 					GameObject trap = new Trap(r);
 					trap.setPosition(pos);
 					r.addObject(trap);
+				} else if (c == 'R') {
+					GameObject stone = new Stone(r);
+					stone.setPosition(pos);
+					r.addObject(stone);
+				} else if (c == 'Y') {
+					GameObject trunk = new Trunk(r);
+					trunk.setPosition(pos);
+					r.addObject(trunk);
 				}
+					
+				
 			}
 
 			y++; // vamos ler as linhas do ficheiro
