@@ -1,10 +1,10 @@
-BSbbbbbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbbbTTbbbb
-bbTTTTTTbb
-bbTTTTTTbb
+WWWWWWWWWW
+W        W  
+W     bC W  
+W        W 
+W   A XX W   
+W        W   
+W          
+W        W   
+W   B  S W   
+WWWWWWWWWW

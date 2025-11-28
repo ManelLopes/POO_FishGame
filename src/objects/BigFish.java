@@ -12,6 +12,7 @@ public class BigFish extends GameCharacter {
 
 	private static BigFish bf = new BigFish(null);
 	private List<GameObject> objects;
+	private String imageName = "bigFishLeft";
 
 	
 	private BigFish(Room room) {
@@ -26,8 +27,12 @@ public class BigFish extends GameCharacter {
 	
 	@Override
 	public String getName() {
-		return "bigFishLeft";
+		return imageName;
 	}
+	
+	public void setImageName(String name) {
+        this.imageName = name;
+    }
 
 	@Override
 	public int getLayer() {
@@ -50,6 +55,16 @@ public class BigFish extends GameCharacter {
 	public boolean goesTrough(GameObject o) {
 		return false;
 	}
+	
+	public void move(GameCharacter fish, Vector2D dir) {
+        super.move(fish, dir);
+
+        if (dir.getX() < 0) {
+            setImageName("bigFishLeft");
+        } else if (dir.getX() > 0) {
+            setImageName("bigFishRight");
+        }
+    }
 
 
 

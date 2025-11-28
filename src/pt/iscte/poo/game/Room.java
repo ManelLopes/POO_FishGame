@@ -325,7 +325,6 @@ public class Room {
 		return true;
 	}
 
-
 //	public boolean checkObjectsOnTop(GameCharacter fish) {
 //
 //		Point2D pos = fish.getPosition();
@@ -393,96 +392,82 @@ public class Room {
 //		return true;
 //
 //	}
-	
+
 	public boolean checkObjectsOnTop(GameCharacter fish) {
 
-		System.out.println("checkObjectsOnTop chamado para: " + fish.getClass().getSimpleName() +
-                " na pos " + fish.getPosition());
-		
-	    Point2D pos = fish.getPosition();
-	    int heavy = 0;
-	    int light = 0;
+		Point2D pos = fish.getPosition();
+		int heavy = 0;
+		int light = 0;
 
-	    // começamos logo acima do peixe
-	    Point2D upperPos = pos.plus(new Vector2D(0, -1));
+		// começamos logo acima do peixe
+		Point2D upperPos = pos.plus(new Vector2D(0, -1));
 
-	    while (true) {
+		while (true) {
 
-	        GameObject objOnTop = null;
+			GameObject objOnTop = null;
 
-	        // procurar objeto EXACTAMENTE em upperPos
-	        for (GameObject o : objects) {
-	            if (o.getPosition().equals(upperPos)) {
-	                objOnTop = o;
-	            	System.out.println("aqui1");
-	                break;
-	            }
-	        }
+			// procurar objeto EXACTAMENTE em upperPos
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(upperPos)) {
+					objOnTop = o;
+					break;
+				}
+			}
 
-	        // se não há nada nessa posição → acabou a pilha
-	        if (objOnTop == null) {
-	        	System.out.println("aqui2");
-	            break;
-	        }
+			// se não há nada nessa posição acabou a pilha
+			if (objOnTop == null) {
+				break;
+			}
 
-	        // se não é movível (parede, aço, etc.) → bloqueia, paramos aqui
-	        if (!objOnTop.isMovable()) {
-	        	System.out.println("aqui3");
-	            break;
-	        }
+			// se não é movível (parede, aço, etc.) bloqueia, paramos aqui
+			if (!objOnTop.isMovable()) {
+				break;
+			}
 
-	        // contar leves/pesados
-	        if (objOnTop.isHeavy()) {
-	        	System.out.println("aqui4");
-	            heavy++;
-	        } else {
-	        	System.out.println("aqui5");
-	            light++;
-	        }
+			// contar leves/pesados
+			if (objOnTop.isHeavy()) {
+				heavy++;
+			} else {
+				light++;
+			}
 
-	        // vamos ver a próxima posição acima
-	        upperPos = upperPos.plus(new Vector2D(0, -1));
-	        
-	    }
+			// vamos ver a próxima posição acima
+			upperPos = upperPos.plus(new Vector2D(0, -1));
 
-	    // ---------- REGRAS ----------
+		}
 
-	    // BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
-	    if (fish instanceof BigFish) {
-	        if (heavy + light >= 2) {
-	        	System.out.println("peixe grande esmagado");
-	            return false;   // esmagado
-	        }
-	        return true;        // seguro
-	    }
+		// ---------- REGRAS ----------
 
-	    // SMALL FISH: morre se tiver 1 pesado OU 2 leves
-	    if (fish instanceof SmallFish) {
-	        if (heavy >= 1) {
-	        	System.out.println("peixe pequeno esmagado");
-	        	return false;  // algum pesado
-	        }
-	        if (light >= 2) {
-	        	System.out.println("peixe pequeno esmagado");
-	        	return false;  // 2 ou mais leves
-	        }
-	        return true;                   // caso contrário, está seguro
-	    }
+		// BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
+		if (fish instanceof BigFish) {
+			if (heavy + light >= 2) {
+				return false; // esmagado
+			}
+			return true; // seguro
+		}
 
-	    // outros objetos (se houver) nunca são esmagados
-    	System.out.println("aqui");
+		// SMALL FISH: morre se tiver 1 pesado OU 2 leves
+		if (fish instanceof SmallFish) {
+			if (heavy >= 1) {
+				return false; // algum pesado
+			}
+			if (light >= 2) {
+				return false; // 2 ou mais leves
+			}
+			return true; // caso contrário, está seguro
+		}
 
-	    return true;
+		// outros objetos (se houver) nunca são esmagados
+
+		return true;
 	}
 
 	public boolean someFishIsCrushed() {
 
 		if (!checkObjectsOnTop(BigFish.getInstance())) {
-			System.out.println("peixe grande esmagado");
 			return true;
 		}
 		if (!checkObjectsOnTop(SmallFish.getInstance())) {
-			System.out.println("peixe pequeno esmagado");
 			return true;
 		}
 
@@ -541,6 +526,9 @@ public class Room {
 					return false;
 				}
 				if (!(o instanceof Water) && !(o instanceof HoledWall)) {
+					return false;
+				}
+				if ((!(obj instanceof Cup) && o instanceof HoledWall)) {
 					return false;
 				}
 			}

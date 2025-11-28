@@ -39,14 +39,12 @@ public class GameEngine implements Observer {
 
 	public boolean isAnyFishCrushed() {
 
-		System.out.println("peixe esmagado(grande ou pequeno)");
 		return (isCrushed(SmallFish.getInstance()) || isCrushed(BigFish.getInstance()));
 
 	}
 
 	public boolean isCrushed(GameCharacter fish) {
 
-		System.out.println("esmagou");
 		return !fish.getRoom().checkObjectsOnTop(fish);
 
 	}
@@ -75,7 +73,7 @@ public class GameEngine implements Observer {
 				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();
+					restartLevel();//show
 					return;
 				}
 
@@ -86,7 +84,7 @@ public class GameEngine implements Observer {
 				BigFish.getInstance().move(BigFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();
+					restartLevel();//show
 					return;
 				}
 			}
@@ -95,7 +93,7 @@ public class GameEngine implements Observer {
 
 			for (GameObject o : currentRoom.getObjects()) {
 				if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
-					System.out.println("Game Over");
+					System.out.println("Game Over");//meter em show
 					restartLevel();
 					return;
 				}
@@ -105,6 +103,7 @@ public class GameEngine implements Observer {
 		int t = ImageGUI.getInstance().getTicks();
 		while (lastTickProcessed < t) {
 			processTick();
+			System.out.println(t);//meter a fazer show
 			currentRoom.applyGravity();
 			if (isAnyFishCrushed()) {
 				restartLevel();
@@ -113,16 +112,14 @@ public class GameEngine implements Observer {
 
 		}
 
-		
 		ImageGUI.getInstance().update();
 	}
 
 	private void processTick() {
+
 		lastTickProcessed++;
-		//meter estatistica, bomba rebentar, partir tronco, 2 ancoras so matam qd caem as 2
-		//virar peixe quando clicamos esquerda ou direita, meter imagem do sangue
-		//meter nivel novo
-		//parede com buraco so e atravessada pela caneca
+		// meter estatistica, bomba rebentar, partir tronco, 2 ancoras so matam qd caem as 2
+		// meter nivel novo
 	}
 
 	public void updateGUI() {
