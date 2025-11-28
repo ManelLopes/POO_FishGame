@@ -475,6 +475,45 @@ public class Room {
 
 	}
 
+//	public boolean isObjectCrushed(GameObject obj) {
+//		
+//		Point2D objPos = obj.getPosition();
+//		
+//		for (GameObject o : objects) {
+//			
+//			if(o.getPosition().equals(objPos)) {
+//				if(o.isHeavy() && obj instanceof Trunk) {
+//					System.out.println("tronco partido");
+//					return true;
+//				}
+//			}
+//			
+//		}
+//		
+//		return false;
+//		
+//	}
+
+	public boolean isObjectCrushed(GameObject obj) {
+
+		if (!(obj instanceof Trunk))
+			return false;
+
+		Point2D pos = obj.getPosition();
+
+		for (GameObject o : objects) {
+
+			if (o == obj)
+				continue;
+
+			if (o.getPosition().equals(pos) && o.isHeavy()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public GameObject getTopEntityAt(Point2D pos) {
 		GameObject top = null;
 

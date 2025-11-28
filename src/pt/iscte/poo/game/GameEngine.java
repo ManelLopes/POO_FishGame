@@ -1,6 +1,7 @@
 package pt.iscte.poo.game;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class GameEngine implements Observer {
 				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();//show
+					restartLevel();// show
 					return;
 				}
 
@@ -84,26 +85,41 @@ public class GameEngine implements Observer {
 				BigFish.getInstance().move(BigFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();//show
+					restartLevel();// show
 					return;
 				}
 			}
 
 			Point2D pos = BigFish.getInstance().getPosition();
+			
+			ArrayList<GameObject> objsToRemove = new ArrayList<>();
 
 			for (GameObject o : currentRoom.getObjects()) {
+				
+
 				if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
-					System.out.println("Game Over");//meter em show
+					System.out.println("Game Over");// meter em show
 					restartLevel();
 					return;
 				}
+				if (currentRoom.isObjectCrushed(o)) {
+				
+					objsToRemove.add(o);
+					
+				}
 			}
+			
+			for(GameObject o : objsToRemove) {
+				System.out.println("removido");
+				currentRoom.removeObject(o);
+			}
+			
 
 		}
 		int t = ImageGUI.getInstance().getTicks();
 		while (lastTickProcessed < t) {
 			processTick();
-			System.out.println(t);//meter a fazer show
+			System.out.println(t);// meter a fazer show
 			currentRoom.applyGravity();
 			if (isAnyFishCrushed()) {
 				restartLevel();
@@ -118,8 +134,10 @@ public class GameEngine implements Observer {
 	private void processTick() {
 
 		lastTickProcessed++;
-		// meter estatistica, bomba rebentar, partir tronco, 2 ancoras so matam qd caem as 2
+		// meter estatistica, bomba rebentar, partir tronco, 2 ancoras so matam qd caem
+		// as 2
 		// meter nivel novo
+		//caneca cai pela parede com buraco mas nao da pa empurrar
 	}
 
 	public void updateGUI() {
