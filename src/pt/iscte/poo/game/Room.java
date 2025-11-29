@@ -165,90 +165,6 @@ public class Room {
 
 	}
 
-//	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-//	    Point2D fishPos = fish.getPosition();
-//	    Point2D objPos = fishPos.plus(dir);
-//
-//	    // 1º objeto à frente do peixe
-//	    GameObject obj = null;
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
-//	            obj = o;
-//	            break;
-//	        }
-//	    }
-//	    if (obj == null) {
-//	        System.out.println("nao tem objeto no destino");
-//	        return false; // não há objeto à frente
-//	    }
-//
-//	    if (!obj.isMovable()) {
-//	        System.out.println("nao pode mover este tipo de objetos");
-//	        return false;
-//	    }
-//
-//	    // SmallFish não empurra objetos pesados
-//	    if (fish instanceof SmallFish && obj.isHeavy()) {
-//	        System.out.println("pequeno nao move obj pesado");
-//	        return false;
-//	    }
-//
-//	    Point2D nextPos = objPos.plus(dir);
-//
-//	    // Tentar descobrir um 2º objeto logo a seguir ao primeiro
-//	    GameObject second = null;
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(nextPos) && o.getLayer() == 1 && !(o instanceof Water)) {
-//	            second = o;
-//	            break;
-//	        }
-//	    }
-//
-//	    // ---- CASO COM 2 OBJETOS EM LINHA ----
-//	    if (second != null) {
-//	        // se o segundo não for movível, bloqueia
-//	        if (!second.isMovable()) {
-//	            System.out.println("2º objeto nao é movivel");
-//	            return false;
-//	        }
-//	        // se algum for pesado e o peixe for pequeno, não empurra
-//	        if (fish instanceof SmallFish && second.isHeavy()) {
-//	            System.out.println("pequeno nao move cadeia com objeto pesado");
-//	            return false;
-//	        }
-//	        Point2D secondNext = nextPos.plus(dir);
-//	        // Verificar se a casa depois do 2º está livre/atravessável
-//	        for (GameObject o : objects) {
-//	            if (o.getPosition().equals(secondNext) && !(o instanceof Water)) {
-//	                if (!second.goesTrough(o)) {
-//	                    System.out.println("2º objeto bloqueado no destino");
-//	                    return false;
-//	                }
-//	            }
-//	        }
-//	        // Movimento em cadeia: mexer primeiro o 2º, depois o 1º
-//	        second.setPosition(secondNext);
-//	        obj.setPosition(nextPos);
-//	        System.out.println("2 objetos movidos");
-//	        return true;
-//	    }
-//
-//	    // ---- CASO NORMAL: SÓ 1 OBJETO ----
-//	    // Verificar se a posição para onde o objeto vai já está ocupada
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
-//	            if (!obj.goesTrough(o)) {
-//	                System.out.println("posicao ocupada");
-//	                return false;
-//	            }
-//	        }
-//	    }
-//
-//	    obj.setPosition(nextPos);
-//	    System.out.println("obj movido");
-//	    return true;
-//	}
-
 	public boolean pushObject(GameCharacter fish, Vector2D dir) {
 		Point2D fishPos = fish.getPosition();
 		Point2D curPos = fishPos.plus(dir);
@@ -324,74 +240,6 @@ public class Room {
 		System.out.println(objectChain.size() + " objetos movidos");
 		return true;
 	}
-
-//	public boolean checkObjectsOnTop(GameCharacter fish) {
-//
-//		Point2D pos = fish.getPosition();
-//		int heavy = 0;
-//		int light = 0;
-//
-//		Point2D upperPos = pos.plus(new Vector2D(0, -1));
-//
-//		// 1) CONTAR OBJETOS ACIMA
-//		while (true) {
-//
-//			GameObject objOnTop = null;
-//
-//			for (GameObject o : objects) {
-//				if (o.getPosition().equals(upperPos)) {
-//					objOnTop = o;
-//					break;
-//				}
-//			}
-//
-//			// nada nesta posição → acabou a pilha
-//			if (objOnTop == null) {
-//				break;
-//			}
-//
-//			// parede / aço / etc → bloqueia tudo → não interessa o que vem acima
-//			if (!objOnTop.isMovable()) {
-//				break;
-//			}
-//
-//			// objeto movível → contar leve/pesado
-//			if (objOnTop.isHeavy()) {
-//				heavy++;
-//				System.out.println("pesado aumenta " + heavy);
-//			} else {
-//				light++;
-//				System.out.println("leve aumenta " + light);
-//			}
-//
-//			// próxima posição acima
-//			upperPos = upperPos.plus(new Vector2D(0, -1));
-//		}
-//
-//		// 2) APLICAR AS REGRAS
-//
-//		if (fish instanceof SmallFish) {
-//			// morre se tiver 1 pesado OU 2 leves
-//			if (heavy >= 1 || light >= 2) {
-//				System.out.println("SmallFish esmagado: heavy=" + heavy + " light=" + light);
-//				return false;
-//			}
-//			return true;
-//		}
-//		
-//		if (fish instanceof BigFish) {
-//			// morre se tiver 2 ou mais objetos
-//			if (heavy + light >= 2) {
-//				System.out.println("BigFish esmagado: heavy=" + heavy + " light=" + light);
-//				return false;
-//			}
-//			return true;
-//		}
-//
-//		
-//		return true;
-//
-//	}
 
 	public boolean checkObjectsOnTop(GameCharacter fish) {
 
@@ -477,6 +325,10 @@ public class Room {
 
 	public boolean checkObjectsOnTopOfObjects(GameObject obj) {
 
+		if(!(obj instanceof Trunk)) {
+			return false;
+		}
+		
 		// Só nos interessa para troncos; se quiseres, podes alargar depois
 		if (!(obj.isHeavy())) {
 			return false;
@@ -527,45 +379,54 @@ public class Room {
 
 		return false; // não foi esmagado
 	}
-	
+
 	public void checkAdjacentObjectsToBomb(Bomb bomb) {
-	    Point2D bombPos = bomb.getPosition();
-	    System.out.println("Bomb a explodir em " + bombPos);
 
-	    Point2D[] adj = new Point2D[] {
-	        bombPos.plus(new Vector2D(0, -1)),
-	        bombPos.plus(new Vector2D(0, 1)),
-	        bombPos.plus(new Vector2D(-1, 0)),
-	        bombPos.plus(new Vector2D(1, 0))
-	    };
+		Point2D bombPos = bomb.getPosition();
+		System.out.println("Bomb a explodir em " + bombPos);
 
-	    ArrayList<GameObject> toRemove = new ArrayList<>();
+		// Só chamar checkAdjacentObjectsToBomb(bomb) no GameEngine,
+		// depois do ciclo em que já fizeste currentRoom.applyGravity() para todos os
+		// ticks.
 
-	    for (Point2D p : adj) {
-	        for (GameObject o : objects) {
-	            if (!o.getPosition().equals(p))
-	                continue;
+		Point2D belowPos = bombPos.plus(new Vector2D(0, 1));
 
-	            System.out.println("Adjacente: " + o + " em " + p);
+		boolean hasWaterBelow = false;
+		boolean hasNonWaterBelow = false;
 
-	            if (o instanceof BigFish || o instanceof SmallFish) {
-	                // aqui decides matar peixe no GameEngine
-	                continue;
-	            }
+		for (GameObject o : objects) {
+			if (!o.getPosition().equals(belowPos))
+				continue;
 
-	            if (o instanceof Trunk || o instanceof Cup) {
-	                System.out.println("Marcado para remover: " + o);
-	                toRemove.add(o);
-	            }
-	        }
-	    }
+			if (o instanceof Water)
+				hasWaterBelow = true;
+			else
+				hasNonWaterBelow = true;
+		}
 
-	    for (GameObject o : toRemove) {
-	        removeObject(o);
-	    }
-	    removeObject(bomb);
+		if (hasWaterBelow && !hasNonWaterBelow) {
+			return;
+		}
+
+		Point2D left = bombPos.plus(new Vector2D(-1, 0));
+		Point2D right = bombPos.plus(new Vector2D(1, 0));
+		Point2D top = bombPos.plus(new Vector2D(0, -1));
+		Point2D below = bombPos.plus(new Vector2D(0, 1));
+
+		for (GameObject o : new ArrayList<>(objects)) {
+			if (o.getPosition().equals(left) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(right) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(top) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(below) && !(o instanceof Water))
+				removeObject(o);
+		}
+
+		removeObject(bomb);
+
 	}
-
 
 	public boolean isObjectCrushed(GameObject obj) {
 		if (!(obj instanceof Trunk))

@@ -92,6 +92,7 @@ public class GameEngine implements Observer {
 			}
 
 		}
+
 		int t = ImageGUI.getInstance().getTicks();
 		while (lastTickProcessed < t) {
 			processTick();
@@ -103,6 +104,29 @@ public class GameEngine implements Observer {
 			}
 
 		}
+
+		ArrayList<Bomb> bombsToCheck = new ArrayList<>();
+		for (GameObject o : currentRoom.getObjects()) {
+			if (o instanceof Bomb) {
+				bombsToCheck.add((Bomb) o);
+			}
+		}
+
+		for (Bomb b : bombsToCheck) {
+			currentRoom.checkAdjacentObjectsToBomb(b);
+		}
+
+		if (isAnyFishCrushed()) {
+			restartLevel();
+			return;
+		}
+		
+		if (!currentRoom.getObjects().contains(BigFish.getInstance()) ||
+			    !currentRoom.getObjects().contains(SmallFish.getInstance())) {
+			    // algum peixe deixou de existir na room → morreu
+			    restartLevel();
+			    return;
+			}
 
 		Point2D pos = BigFish.getInstance().getPosition();
 
@@ -128,133 +152,6 @@ public class GameEngine implements Observer {
 
 		ImageGUI.getInstance().update();
 	}
-	
-//	@Override
-//	public void update(Observed source) {
-//
-//	    if (ImageGUI.getInstance().wasKeyPressed()) {
-//	        int k = ImageGUI.getInstance().keyPressed();
-//
-//	        if (k == 32) { // espaço
-//	            SmallFish.switchFish();
-//	            return;
-//	        }
-//
-//	        if (k == 82) { // 'R'
-//	            restartLevel();
-//	            return;
-//	        }
-//
-//	        Vector2D dir = Direction.directionFor(k).asVector();
-//
-//	        if (SmallFish.isActive()) {
-//	            Room sfRoom = SmallFish.getInstance().getRoom();
-//	            sfRoom.pushObject(SmallFish.getInstance(), dir);
-//	            SmallFish.getInstance().move(SmallFish.getInstance(), dir);
-//
-//	            if (isAnyFishCrushed()) {
-//	                restartLevel();
-//	                return;
-//	            }
-//
-//	        } else {
-//	            Room bfRoom = BigFish.getInstance().getRoom();
-//	            bfRoom.pushObject(BigFish.getInstance(), dir);
-//	            BigFish.getInstance().move(BigFish.getInstance(), dir);
-//
-//	            if (isAnyFishCrushed()) {
-//	                restartLevel();
-//	                return;
-//	            }
-//	        }
-//	    }
-//
-//	    // -------- TICKS + GRAVIDADE --------
-//	    int t = ImageGUI.getInstance().getTicks();
-//	    while (lastTickProcessed < t) {
-//	        processTick();
-//	        currentRoom.applyGravity();
-//	        if (isAnyFishCrushed()) {
-//	            restartLevel();
-//	            return;
-//	        }
-//	    }
-//
-//	    // -------- BOMBA: explode quando afunda e encontra objeto sólido por baixo --------
-//	    ArrayList<Bomb> bombsToExplode = new ArrayList<>();
-//
-//	    for (GameObject o : currentRoom.getObjects()) {
-//	        if (!(o instanceof Bomb))
-//	            continue;
-//
-//	        Bomb b = (Bomb) o;
-//	        Point2D bp = b.getPosition();
-//
-//	        // célula imediatamente abaixo da bomba
-//	        Point2D below = bp.plus(new Vector2D(0, 1));
-//
-//	        GameObject objBelow = null;
-//	        for (GameObject g : currentRoom.getObjects()) {
-//	            if (g.getPosition().equals(below)) {
-//	                objBelow = g;
-//	                break;
-//	            }
-//	        }
-//
-//	        // se não há nada por baixo, ainda pode cair mais noutro tick
-//	        if (objBelow == null)
-//	            continue;
-//
-//	        // se por baixo é água, ainda está a afundar → não explode
-//	        if (objBelow instanceof objects.Water)
-//	            continue;
-//
-//	        // se por baixo é peixe, não dispara explosão (regra do enunciado)
-//	        if (objBelow instanceof BigFish || objBelow instanceof SmallFish)
-//	            continue;
-//
-//	        // chegou aqui: afundou e encontrou um objeto sólido (não peixe, não água) → explode
-//	        bombsToExplode.add(b);
-//	    }
-//
-//	    // fazer explodir todas as bombas marcadas
-//	    for (Bomb b : bombsToExplode) {
-//	        currentRoom.checkAdjacentObjectsToBomb(b);
-//	    }
-//
-//	    // depois da explosão, vê se algum peixe morreu (por peso/explosão)
-//	    if (isAnyFishCrushed()) {
-//	        restartLevel();
-//	        return;
-//	    }
-//
-//	    // -------- TRAP + TRONCOS ESMAGADOS --------
-//	    Point2D pos = BigFish.getInstance().getPosition();
-//
-//	    ArrayList<GameObject> objsToRemove = new ArrayList<>();
-//
-//	    for (GameObject o : currentRoom.getObjects()) {
-//
-//	        if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
-//	            System.out.println("Game Over");
-//	            restartLevel();
-//	            return;
-//	        }
-//	        if (currentRoom.checkObjectsOnTopOfObjects(o)) {
-//	            objsToRemove.add(o); // troncos esmagados
-//	        }
-//	    }
-//
-//	    System.out.println("Crush encontrados: " + objsToRemove.size());
-//	    for (GameObject o : objsToRemove) {
-//	        System.out.println("removido" + o);
-//	        currentRoom.removeObject(o);
-//	    }
-//
-//	    ImageGUI.getInstance().update();
-//	}
-
-
 
 	private void processTick() {
 
