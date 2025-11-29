@@ -259,7 +259,7 @@ public class Room {
 		while (true) {
 			GameObject obj = null;
 			for (GameObject o : objects) {
-				if (o.getPosition().equals(curPos) && o.getLayer() == 1) {
+				if (o.getPosition().equals(curPos) && o.getLayer() == 1 && o.isMovable()) {
 					obj = o;
 					break;
 				}
@@ -475,42 +475,117 @@ public class Room {
 
 	}
 
-//	public boolean isObjectCrushed(GameObject obj) {
-//		
-//		Point2D objPos = obj.getPosition();
-//		
-//		for (GameObject o : objects) {
-//			
-//			if(o.getPosition().equals(objPos)) {
-//				if(o.isHeavy() && obj instanceof Trunk) {
-//					System.out.println("tronco partido");
-//					return true;
-//				}
-//			}
-//			
-//		}
-//		
-//		return false;
-//		
-//	}
+	public boolean checkObjectsOnTopOfObjects(GameObject obj) {
+
+		// Só nos interessa para troncos; se quiseres, podes alargar depois
+		if (!(obj.isHeavy())) {
+			return false;
+		}
+
+		Point2D pos = obj.getPosition();
+		int heavy = 0;
+
+		// começamos logo acima do tronco
+		Point2D upperPos = pos.plus(new Vector2D(0, -1));
+
+		while (true) {
+
+			GameObject objOnTop = null;
+
+			// procurar objeto EXACTAMENTE em upperPos
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(upperPos)) {
+					objOnTop = o;
+					break;
+				}
+			}
+
+			// se não há nada nessa posição acabou a pilha
+			if (objOnTop == null) {
+				break;
+			}
+
+			// se não é movível (parede, aço, etc.) bloqueia, paramos aqui
+			if (!objOnTop.isMovable()) {
+				break;
+			}
+
+			// contar leves/pesados
+			if (objOnTop.isHeavy()) {
+				heavy++;
+			}
+
+			// vamos ver a próxima posição acima
+			upperPos = upperPos.plus(new Vector2D(0, -1));
+		}
+
+		// ---------- REGRAS PARA O TRONCO ----------
+		// Exemplo: tronco parte se tiver pelo menos 1 pesado em cima
+		if (heavy >= 1) {
+			return true; // tronco esmagado
+		}
+
+		return false; // não foi esmagado
+	}
+	
+	public void checkAdjacentObjectsToBomb(Bomb bomb) {
+	    Point2D bombPos = bomb.getPosition();
+	    System.out.println("Bomb a explodir em " + bombPos);
+
+	    Point2D[] adj = new Point2D[] {
+	        bombPos.plus(new Vector2D(0, -1)),
+	        bombPos.plus(new Vector2D(0, 1)),
+	        bombPos.plus(new Vector2D(-1, 0)),
+	        bombPos.plus(new Vector2D(1, 0))
+	    };
+
+	    ArrayList<GameObject> toRemove = new ArrayList<>();
+
+	    for (Point2D p : adj) {
+	        for (GameObject o : objects) {
+	            if (!o.getPosition().equals(p))
+	                continue;
+
+	            System.out.println("Adjacente: " + o + " em " + p);
+
+	            if (o instanceof BigFish || o instanceof SmallFish) {
+	                // aqui decides matar peixe no GameEngine
+	                continue;
+	            }
+
+	            if (o instanceof Trunk || o instanceof Cup) {
+	                System.out.println("Marcado para remover: " + o);
+	                toRemove.add(o);
+	            }
+	        }
+	    }
+
+	    for (GameObject o : toRemove) {
+	        removeObject(o);
+	    }
+	    removeObject(bomb);
+	}
+
 
 	public boolean isObjectCrushed(GameObject obj) {
-
 		if (!(obj instanceof Trunk))
 			return false;
+
+		System.out.println("A testar tronco em " + obj.getPosition());
 
 		Point2D pos = obj.getPosition();
 
 		for (GameObject o : objects) {
-
 			if (o == obj)
 				continue;
 
-			if (o.getPosition().equals(pos) && o.isHeavy()) {
-				return true;
+			if (o.getPosition().equals(pos)) {
+				System.out.println("  Em cima do tronco: " + o + " heavy=" + o.isHeavy());
+				if (o.isHeavy()) {
+					return true; // há um pesado na mesma casa do tronco
+				}
 			}
 		}
-
 		return false;
 	}
 
