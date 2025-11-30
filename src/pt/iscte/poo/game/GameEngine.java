@@ -1,11 +1,14 @@
 package pt.iscte.poo.game;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import objects.SmallFish;
 import objects.BigFish;
+import objects.Bomb;
+import objects.GameCharacter;
 import objects.GameObject;
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.observer.Observed;
@@ -36,6 +39,18 @@ public class GameEngine implements Observer {
 		}
 	}
 
+	public boolean isAnyFishCrushed() {
+
+		return (isCrushed(SmallFish.getInstance()) || isCrushed(BigFish.getInstance()));
+
+	}
+
+	public boolean isCrushed(GameCharacter fish) {
+
+		return !fish.getRoom().checkObjectsOnTop(fish);
+
+	}
+
 	@Override
 	public void update(Observed source) {
 
@@ -52,52 +67,98 @@ public class GameEngine implements Observer {
 				return;
 			}
 
-			if (SmallFish.isActive()) {
-				Vector2D dir = Direction.directionFor(k).asVector();
-				Room sfRoom = SmallFish.getInstance().getRoom();
-				sfRoom.pushObject(SmallFish.getInstance(), dir);
-				System.out.println("");
-				System.out.println("Gravidade aplicada");
-				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
-				if (!currentRoom.checkObjectsOnTop(SmallFish.getInstance())) {
-					restartLevel();
-					return;
-				}
-				return;
-			}
-
 			Vector2D dir = Direction.directionFor(k).asVector();
 
-			Room bfRoom = BigFish.getInstance().getRoom();
-			bfRoom.pushObject(BigFish.getInstance(), dir);
+			if (SmallFish.isActive()) {
+				Room sfRoom = SmallFish.getInstance().getRoom();
+				sfRoom.pushObject(SmallFish.getInstance(), dir);
+				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
 
-			BigFish.getInstance().move(BigFish.getInstance(), dir);
-			if (!currentRoom.checkObjectsOnTop(BigFish.getInstance())) {
+				if (isAnyFishCrushed()) {
+					restartLevel();// show
+					return;
+				}
+
+			} else {
+				Room bfRoom = BigFish.getInstance().getRoom();
+				bfRoom.pushObject(BigFish.getInstance(), dir);
+
+				BigFish.getInstance().move(BigFish.getInstance(), dir);
+
+				if (isAnyFishCrushed()) {
+					restartLevel();// show
+					return;
+				}
+			}
+
+		}
+
+		int t = ImageGUI.getInstance().getTicks();
+		while (lastTickProcessed < t) {
+			processTick();
+			System.out.println(t);// meter a fazer show
+			currentRoom.applyGravity();
+			if (isAnyFishCrushed()) {
 				restartLevel();
 				return;
 			}
 
-			Point2D pos = BigFish.getInstance().getPosition();
+		}
 
-			for (GameObject o : currentRoom.getObjects()) {
-				if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
-					System.out.println("Game Over");
-					restartLevel();
-					return;
-				}
+		ArrayList<Bomb> bombsToCheck = new ArrayList<>();
+		for (GameObject o : currentRoom.getObjects()) {
+			if (o instanceof Bomb) {
+				bombsToCheck.add((Bomb) o);
+			}
+		}
+
+		for (Bomb b : bombsToCheck) {
+			currentRoom.checkAdjacentObjectsToBomb(b);
+		}
+
+		if (isAnyFishCrushed()) {
+			restartLevel();
+			return;
+		}
+		
+		if (!currentRoom.getObjects().contains(BigFish.getInstance()) ||
+			    !currentRoom.getObjects().contains(SmallFish.getInstance())) {
+			    // algum peixe deixou de existir na room → morreu
+			    restartLevel();
+			    return;
 			}
 
+		Point2D pos = BigFish.getInstance().getPosition();
+
+		ArrayList<GameObject> objsToRemove = new ArrayList<>();
+
+		for (GameObject o : currentRoom.getObjects()) {
+
+			if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
+				System.out.println("Game Over");
+				restartLevel();
+				return;
+			}
+			if (currentRoom.checkObjectsOnTopOfObjects(o)) {
+				objsToRemove.add(o); // aqui vão entrar os troncos
+			}
 		}
-		int t = ImageGUI.getInstance().getTicks();
-		while (lastTickProcessed < t) {
-			processTick();
-			currentRoom.applyGravity();
+
+		System.out.println("Crush encontrados: " + objsToRemove.size());
+		for (GameObject o : objsToRemove) {
+			System.out.println("removido" + o);
+			currentRoom.removeObject(o);
 		}
+
 		ImageGUI.getInstance().update();
 	}
 
 	private void processTick() {
+
 		lastTickProcessed++;
+		// meter estatistica, bomba rebentar, 2 ancoras so matam qd caem
+		// as 2
+		// meter nivel novo
 	}
 
 	public void updateGUI() {

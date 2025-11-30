@@ -14,4 +14,16 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>images/buoy.png</name>
+			<type>1</type>
+			<location>C:/Users/JOYBE COMPUTERS/Downloads/buoy.png</location>
+		</link>
+		<link>
+			<name>images/krab.png</name>
+			<type>1</type>
+			<location>C:/Users/JOYBE COMPUTERS/Downloads/krab.png</location>
+		</link>
+	</linkedResources>
 </projectDescription>

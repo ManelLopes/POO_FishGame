@@ -7,6 +7,7 @@ import objects.Water;
 import objects.Anchor;
 import objects.BigFish;
 import objects.Bomb;
+import objects.Buoy;
 import objects.Cup;
 import objects.GameCharacter;
 import objects.GameObject;
@@ -154,9 +155,11 @@ public class Room {
 					GameObject trunk = new Trunk(r);
 					trunk.setPosition(pos);
 					r.addObject(trunk);
+				} else if (c == 'V') {
+					GameObject buoy = new Buoy(r);
+					buoy.setPosition(pos);
+					r.addObject(buoy);
 				}
-					
-				
 			}
 
 			y++; // vamos ler as linhas do ficheiro
@@ -166,228 +169,329 @@ public class Room {
 
 	}
 
-//	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-//	    Point2D fishPos = fish.getPosition();
-//	    Point2D objPos = fishPos.plus(dir);
+	public boolean pushObject(GameCharacter fish, Vector2D dir) {
+		Point2D fishPos = fish.getPosition();
+		Point2D curPos = fishPos.plus(dir);
+
+		// 1) Construir a cadeia de objetos consecutivos à frente do peixe
+		List<GameObject> objectChain = new ArrayList<>();
+
+		while (true) {
+			GameObject obj = null;
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(curPos) && o.getLayer() == 1 && o.isMovable()) {
+					obj = o;
+					break;
+				}
+			}
+			if (obj == null) {
+				break; // acabou a cadeia
+			}
+			objectChain.add(obj);
+			curPos = curPos.plus(dir); // próxima casa na mesma direção
+		}
+
+		// Se não havia nenhum objeto à frente
+		if (objectChain.isEmpty()) {
+			System.out.println("nao tem objeto no destino");
+			return false;
+		}
+
+		if (fish instanceof BigFish && dir.getY() < 0 && objectChain.size() > 1) {
+			System.out.println("bigFish nao pode empurrar mais que 1 objeto para cima");
+			return false;
+		}
+
+		// 2) Regra: SmallFish só pode empurrar 1 objeto
+		if (fish instanceof SmallFish && objectChain.size() > 1) {
+			System.out.println("pequeno nao pode empurrar mais que 1 objeto");
+			return false;
+		}
+
+		// 3) Verificar se todos na cadeia são empurráveis para o peixe atual
+		for (GameObject o : objectChain) {
+			if (!o.isMovable()) {
+				System.out.println("objeto nao é movivel: " + o);
+				return false;
+			}
+			if (fish instanceof SmallFish && o.isHeavy()) {
+				System.out.println("pequeno nao move obj pesado: " + o);
+				return false;
+			}
+		}
+
+		// 4) Verificar se a posição a seguir ao último da cadeia é válida
+		GameObject last = objectChain.get(objectChain.size() - 1);
+		Point2D lastNext = last.getPosition().plus(dir);
+
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(lastNext) && !(o instanceof Water)) {
+				// se o último não conseguir atravessar este objeto, bloqueia
+				if (!last.goesTrough(o)) {
+					System.out.println("cadeia bloqueada no destino final");
+					return false;
+				}
+			}
+		}
+
+		// 5) Movimento: empurrar de trás para a frente
+		for (int i = objectChain.size() - 1; i >= 0; i--) {
+			GameObject obj = objectChain.get(i);
+			Point2D newPos = obj.getPosition().plus(dir);
+			obj.setPosition(newPos);
+		}
+
+		System.out.println(objectChain.size() + " objetos movidos");
+		return true;
+	}
+
+//	private boolean applyBuoyPhysics(GameObject b) {
 //
-//	    // 1º objeto à frente do peixe
-//	    GameObject obj = null;
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(objPos) && o.getLayer() == 1) {
-//	            obj = o;
-//	            break;
-//	        }
-//	    }
-//	    if (obj == null) {
-//	        System.out.println("nao tem objeto no destino");
-//	        return false; // não há objeto à frente
-//	    }
+//		Point2D pos = b.getPosition();
+//		Point2D up = pos.plus(new Vector2D(0, -1));
+//		Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
 //
-//	    if (!obj.isMovable()) {
-//	        System.out.println("nao pode mover este tipo de objetos");
-//	        return false;
-//	    }
-//
-//	    // SmallFish não empurra objetos pesados
-//	    if (fish instanceof SmallFish && obj.isHeavy()) {
-//	        System.out.println("pequeno nao move obj pesado");
-//	        return false;
-//	    }
-//
-//	    Point2D nextPos = objPos.plus(dir);
-//
-//	    // Tentar descobrir um 2º objeto logo a seguir ao primeiro
-//	    GameObject second = null;
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(nextPos) && o.getLayer() == 1 && !(o instanceof Water)) {
-//	            second = o;
-//	            break;
-//	        }
-//	    }
-//
-//	    // ---- CASO COM 2 OBJETOS EM LINHA ----
-//	    if (second != null) {
-//	        // se o segundo não for movível, bloqueia
-//	        if (!second.isMovable()) {
-//	            System.out.println("2º objeto nao é movivel");
-//	            return false;
-//	        }
-//	        // se algum for pesado e o peixe for pequeno, não empurra
-//	        if (fish instanceof SmallFish && second.isHeavy()) {
-//	            System.out.println("pequeno nao move cadeia com objeto pesado");
-//	            return false;
-//	        }
-//	        Point2D secondNext = nextPos.plus(dir);
-//	        // Verificar se a casa depois do 2º está livre/atravessável
-//	        for (GameObject o : objects) {
-//	            if (o.getPosition().equals(secondNext) && !(o instanceof Water)) {
-//	                if (!second.goesTrough(o)) {
-//	                    System.out.println("2º objeto bloqueado no destino");
-//	                    return false;
-//	                }
-//	            }
-//	        }
-//	        // Movimento em cadeia: mexer primeiro o 2º, depois o 1º
-//	        second.setPosition(secondNext);
-//	        obj.setPosition(nextPos);
-//	        System.out.println("2 objetos movidos");
-//	        return true;
-//	    }
-//
-//	    // ---- CASO NORMAL: SÓ 1 OBJETO ----
-//	    // Verificar se a posição para onde o objeto vai já está ocupada
-//	    for (GameObject o : objects) {
-//	        if (o.getPosition().equals(nextPos) && !(o instanceof Water)) {
-//	            if (!obj.goesTrough(o)) {
-//	                System.out.println("posicao ocupada");
-//	                return false;
-//	            }
-//	        }
-//	    }
-//
-//	    obj.setPosition(nextPos);
-//	    System.out.println("obj movido");
-//	    return true;
+//		if (checkObjectsOnTopOfObjects(b) && canObjMoveTo(b, posBelow)) {
+//			b.setPosition(posBelow);
+//			return true;
+//		} else if (canObjMoveTo(b, up) && !(checkObjectsOnTopOfObjects(b))) {
+//			b.setPosition(up);
+//			return false;
+//		}
+//		return false;
 //	}
 	
-	public boolean pushObject(GameCharacter fish, Vector2D dir) {
-	    Point2D fishPos = fish.getPosition();
-	    Point2D curPos = fishPos.plus(dir);
+	private boolean applyBuoyPhysics(GameObject b) {  // ta feito crlh
 
-	    // 1) Construir a cadeia de objetos consecutivos à frente do peixe
-	    List<GameObject> objectChain = new ArrayList<>();
+	    Point2D pos      = b.getPosition();
+	    Point2D up       = pos.plus(new Vector2D(0, -1));
+	    Point2D posBelow = pos.plus(new Vector2D(0,  1));
 
-	    while (true) {
-	        GameObject obj = null;
-	        for (GameObject o : objects) {
-	            if (o.getPosition().equals(curPos) && o.getLayer() == 1) {
-	                obj = o;
-	                break;
-	            }
-	        }
-	        if (obj == null) {
-	            break; // acabou a cadeia
-	        }
-	        objectChain.add(obj);
-	        curPos = curPos.plus(dir); // próxima casa na mesma direção
+	    // ver o que está mesmo por cima da boia
+	    GameObject aboveBuoy = getTopEntityAt(up);
+	    boolean hasMovableAbove = (aboveBuoy != null && aboveBuoy.isMovable());
+
+	    if (hasMovableAbove && canObjMoveTo(b, posBelow)) {
+	        // tem objeto em cima e afunda 
+	        b.setPosition(posBelow);
+	        return true;
+	    } else if (!hasMovableAbove && canObjMoveTo(b, up)) {
+	        // não tem nada em cima e flutua
+	        b.setPosition(up);
+	        return true;
 	    }
 
-	    // Se não havia nenhum objeto à frente
-	    if (objectChain.isEmpty()) {
-	        System.out.println("nao tem objeto no destino");
-	        return false;
-	    }
-	    
-	    if (fish instanceof BigFish && dir.getY() < 0 && objectChain.size() > 1) {
-	        System.out.println("bigFish nao pode empurrar mais que 1 objeto para cima");
-	        return false;
-	    }
-
-	    // 2) Regra: SmallFish só pode empurrar 1 objeto
-	    if (fish instanceof SmallFish && objectChain.size() > 1) {
-	        System.out.println("pequeno nao pode empurrar mais que 1 objeto");
-	        return false;
-	    }
-
-	    // 3) Verificar se todos na cadeia são empurráveis para o peixe atual
-	    for (GameObject o : objectChain) {
-	        if (!o.isMovable()) {
-	            System.out.println("objeto nao é movivel: " + o);
-	            return false;
-	        }
-	        if (fish instanceof SmallFish && o.isHeavy()) {
-	            System.out.println("pequeno nao move obj pesado: " + o);
-	            return false;
-	        }
-	    }
-
-	    // 4) Verificar se a posição a seguir ao último da cadeia é válida
-	    GameObject last = objectChain.get(objectChain.size() - 1);
-	    Point2D lastNext = last.getPosition().plus(dir);
-
-	    for (GameObject o : objects) {
-	        if (o.getPosition().equals(lastNext) && !(o instanceof Water)) {
-	            // se o último não conseguir atravessar este objeto, bloqueia
-	            if (!last.goesTrough(o)) {
-	                System.out.println("cadeia bloqueada no destino final");
-	                return false;
-	            }
-	        }
-	    }
-
-	    // 5) Movimento: empurrar de trás para a frente
-	    for (int i = objectChain.size() - 1; i >= 0; i--) {
-	        GameObject obj = objectChain.get(i);
-	        Point2D newPos = obj.getPosition().plus(dir);
-	        obj.setPosition(newPos);
-	    }
-
-	    System.out.println(objectChain.size() + " objetos movidos");
-	    return true;
+	    return false;
 	}
-	
+
+
 	public boolean checkObjectsOnTop(GameCharacter fish) {
-		
+
 		Point2D pos = fish.getPosition();
 		int heavy = 0;
 		int light = 0;
-		
-		Point2D upperPos = pos.plus(new Vector2D(0,-1));
-		
-		while(true) {
-			
-			boolean foundSomething = false;
-			
-			for(GameObject o : objects) {
-				if(o.getPosition().equals(upperPos)) {
-					if(o instanceof Wall || o instanceof SteelHorizontal) {
-						foundSomething = true;
-						break;
-					}
-					if(o.isMovable()) {
-						if(o.isHeavy()) {
-							heavy++;
-						}else {
-							light++;
-						}
-					}
+
+		// começamos logo acima do peixe
+		Point2D upperPos = pos.plus(new Vector2D(0, -1));
+
+		while (true) {
+
+			GameObject objOnTop = null;
+
+			// procurar objeto EXACTAMENTE em upperPos
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(upperPos)) {
+					objOnTop = o;
+					break;
 				}
 			}
-			
-			if(!foundSomething) {
+
+			// se não há nada nessa posição acabou a pilha
+			if (objOnTop == null) {
 				break;
 			}
-			
-			upperPos = upperPos.plus(new Vector2D(0,-1));
-			
-		}
-		
-		if(fish instanceof BigFish) {
-			
-			if(heavy > 1) {
-				return false;
+
+			// se não é movível (parede, aço, etc.) bloqueia, paramos aqui
+			if (!objOnTop.isMovable()) {
+				break;
 			}
-			if(heavy == 1 && light >= 1) {
-				return false;
+
+			// contar leves/pesados
+			if (objOnTop.isHeavy()) {
+				heavy++;
+			} else {
+				light++;
 			}
-			
-			return true;
-			
+
+			// vamos ver a próxima posição acima
+			upperPos = upperPos.plus(new Vector2D(0, -1));
+
 		}
-		
-		if(fish instanceof SmallFish) {
-			
-			if(light <= 1 && heavy == 0) {
-				return true;
+
+		// ---------- REGRAS ----------
+
+		// BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
+		if (fish instanceof BigFish) {
+			if (heavy + light >= 2) {
+				return false; // esmagado
 			}
-			return false;		
+			return true; // seguro
 		}
-		
+
+		// SMALL FISH: morre se tiver 1 pesado OU 2 leves
+		if (fish instanceof SmallFish) {
+			if (heavy >= 1) {
+				return false; // algum pesado
+			}
+			if (light >= 2) {
+				return false; // 2 ou mais leves
+			}
+			return true; // caso contrário, está seguro
+		}
+
+		// outros objetos (se houver) nunca são esmagados
+
 		return true;
-		
 	}
 
+	public boolean someFishIsCrushed() {
 
+		if (!checkObjectsOnTop(BigFish.getInstance())) {
+			return true;
+		}
+		if (!checkObjectsOnTop(SmallFish.getInstance())) {
+			return true;
+		}
+
+		return false;
+
+	}
+
+	public boolean checkObjectsOnTopOfObjects(GameObject obj) {
+
+		if (!(obj instanceof Trunk)) {
+			return false;
+		}
+
+		// Só nos interessa para troncos; se quiseres, podes alargar depois
+		if (!(obj.isHeavy())) {
+			return false;
+		}
+
+		Point2D pos = obj.getPosition();
+		int heavy = 0;
+
+		// começamos logo acima do tronco
+		Point2D upperPos = pos.plus(new Vector2D(0, -1));
+
+		while (true) {
+
+			GameObject objOnTop = null;
+
+			// procurar objeto EXACTAMENTE em upperPos
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(upperPos)) {
+					objOnTop = o;
+					break;
+				}
+			}
+
+			// se não há nada nessa posição acabou a pilha
+			if (objOnTop == null) {
+				break;
+			}
+
+			// se não é movível (parede, aço, etc.) bloqueia, paramos aqui
+			if (!objOnTop.isMovable()) {
+				break;
+			}
+
+			// contar leves/pesados
+			if (objOnTop.isHeavy()) {
+				heavy++;
+			}
+
+			// vamos ver a próxima posição acima
+			upperPos = upperPos.plus(new Vector2D(0, -1));
+		}
+
+		// ---------- REGRAS PARA O TRONCO ----------
+		// Exemplo: tronco parte se tiver pelo menos 1 pesado em cima
+		if (heavy >= 1) {
+			return true; // tronco esmagado
+		}
+		return false;
+	}
+
+	public void checkAdjacentObjectsToBomb(Bomb bomb) {
+
+		Point2D bombPos = bomb.getPosition();
+		System.out.println("Bomb a explodir em " + bombPos);
+
+		// Só chamar checkAdjacentObjectsToBomb(bomb) no GameEngine,
+		// depois do ciclo em que já fizeste currentRoom.applyGravity() para todos os
+		// ticks.
+
+		Point2D belowPos = bombPos.plus(new Vector2D(0, 1));
+
+		boolean hasWaterBelow = false;
+		boolean hasNonWaterBelow = false;
+
+		for (GameObject o : objects) {
+			if (!o.getPosition().equals(belowPos))
+				continue;
+
+			if (o instanceof Water)
+				hasWaterBelow = true;
+			else
+				hasNonWaterBelow = true;
+		}
+
+		if (hasWaterBelow && !hasNonWaterBelow) {
+			return;
+		}
+
+		Point2D left = bombPos.plus(new Vector2D(-1, 0));
+		Point2D right = bombPos.plus(new Vector2D(1, 0));
+		Point2D top = bombPos.plus(new Vector2D(0, -1));
+		Point2D below = bombPos.plus(new Vector2D(0, 1));
+
+		for (GameObject o : new ArrayList<>(objects)) {
+			if (o.getPosition().equals(left) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(right) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(top) && !(o instanceof Water))
+				removeObject(o);
+			if (o.getPosition().equals(below) && !(o instanceof Water))
+				removeObject(o);
+		}
+
+		removeObject(bomb);
+
+	}
+
+	public boolean isObjectCrushed(GameObject obj) {
+		if (!(obj instanceof Trunk))
+			return false;
+
+		System.out.println("A testar tronco em " + obj.getPosition());
+
+		Point2D pos = obj.getPosition();
+
+		for (GameObject o : objects) {
+			if (o == obj)
+				continue;
+
+			if (o.getPosition().equals(pos)) {
+				System.out.println("  Em cima do tronco: " + o + " heavy=" + o.isHeavy());
+				if (o.isHeavy()) {
+					return true; // há um pesado na mesma casa do tronco
+				}
+			}
+		}
+		return false;
+	}
 
 	public GameObject getTopEntityAt(Point2D pos) {
 		GameObject top = null;
@@ -406,27 +510,30 @@ public class Room {
 	public void applyGravity() {
 
 		for (GameObject o : objects) {
+
+			if (o instanceof Buoy) {
+				applyBuoyPhysics(o);
+			}
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
 			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
-				System.out.println("objeto cai");
 			}
 		}
 
 	}
 
 	public boolean canMoveTo(GameCharacter fish, Point2D pos) {
-		
+
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
 				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())
 						|| (!(o instanceof Water) && !(o instanceof HoledWall) && !(o instanceof Trap))) {
 					return false; // não pode passar
 				}
-				if(o instanceof HoledWall) {
+				if (o instanceof HoledWall) {
 					return fish instanceof SmallFish;
 				}
-				
+
 			}
 		}
 
@@ -436,10 +543,14 @@ public class Room {
 	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
-				if ((obj.isHeavy() && o instanceof HoledWall) || o instanceof Trap || o instanceof Wall || o instanceof SteelHorizontal) {
+				if ((obj.isHeavy() && o instanceof HoledWall) || o instanceof Trap || o instanceof Wall
+						|| o instanceof SteelHorizontal) {
 					return false;
 				}
-				if(!(o instanceof Water) && !(o instanceof HoledWall)) {
+				if (!(o instanceof Water) && !(o instanceof HoledWall)) {
+					return false;
+				}
+				if ((!(obj instanceof Cup) && o instanceof HoledWall)) {
 					return false;
 				}
 			}
