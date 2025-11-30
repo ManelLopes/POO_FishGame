@@ -12,6 +12,7 @@ import objects.Cup;
 import objects.GameCharacter;
 import objects.GameObject;
 import objects.HoledWall;
+import objects.Krab;
 import objects.SmallFish;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
@@ -159,6 +160,11 @@ public class Room {
 					GameObject buoy = new Buoy(r);
 					buoy.setPosition(pos);
 					r.addObject(buoy);
+				} else if (c == 'k') {
+					GameObject krab = new Krab(r);
+					krab.setPosition(pos);
+					r.addObject(krab);
+					
 				}
 			}
 
@@ -244,22 +250,6 @@ public class Room {
 		System.out.println(objectChain.size() + " objetos movidos");
 		return true;
 	}
-
-//	private boolean applyBuoyPhysics(GameObject b) {
-//
-//		Point2D pos = b.getPosition();
-//		Point2D up = pos.plus(new Vector2D(0, -1));
-//		Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
-//
-//		if (checkObjectsOnTopOfObjects(b) && canObjMoveTo(b, posBelow)) {
-//			b.setPosition(posBelow);
-//			return true;
-//		} else if (canObjMoveTo(b, up) && !(checkObjectsOnTopOfObjects(b))) {
-//			b.setPosition(up);
-//			return false;
-//		}
-//		return false;
-//	}
 	
 	private boolean applyBuoyPhysics(GameObject b) {  // ta feito crlh
 
