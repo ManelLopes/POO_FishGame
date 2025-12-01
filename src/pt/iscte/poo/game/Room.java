@@ -663,7 +663,7 @@ public class Room {
 				continue;
 			}
 
-			for (GameObject o : objects) {
+			for (GameObject o : new ArrayList<>(objects)) {
 				if (o.getPosition().equals(kpos) && o instanceof Trap) {
 					removeObject(k);
 					break;
