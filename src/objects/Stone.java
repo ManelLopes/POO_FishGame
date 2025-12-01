@@ -3,7 +3,7 @@ package objects;
 import pt.iscte.poo.game.Room;
 
 public class Stone extends GameObject{
-	
+	private boolean hasSpawnedCrab = false;	
 	public Stone(Room room) {
 		super(room);
 	}
@@ -36,6 +36,14 @@ public class Stone extends GameObject{
 	@Override
 	public boolean goesTrough(GameObject o) {
 		return true;
+	}
+	
+	public boolean hasSpawnedCrab() {
+		return hasSpawnedCrab;
+	}
+	
+	public void setHasSpawnedCrab(boolean hasSpawnedCrab) {
+		this.hasSpawnedCrab = hasSpawnedCrab;
 	}
 	
 	

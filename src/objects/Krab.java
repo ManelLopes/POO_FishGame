@@ -35,8 +35,6 @@ public class Krab extends GameObject{
 	
 	@Override
 	public boolean goesTrough(GameObject o) {
-		if(o instanceof HoledWall)
-			return true;
 		return false;
 	}
 

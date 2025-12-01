@@ -3,6 +3,8 @@ package pt.iscte.poo.game;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import objects.Water;
 import objects.Anchor;
 import objects.BigFish;
@@ -250,6 +252,20 @@ public class Room {
 			GameObject obj = objectChain.get(i);
 			Point2D newPos = obj.getPosition().plus(dir);
 			obj.setPosition(newPos);
+
+			// Se for pedra e movimento horizontal, criar Krab na 1ª vez
+			if (obj instanceof Stone && dir.getY() == 0) {
+				Stone s = (Stone) obj;
+				if (!s.hasSpawnedCrab()) { // 👈 corrigido
+					Point2D above = newPos.plus(new Vector2D(0, -1));
+					if (canKrabSpawnAt(above)) {
+						GameObject krab = new Krab(this);
+						krab.setPosition(above);
+						addObject(krab);
+						s.setHasSpawnedCrab(true);
+					}
+				}
+			}
 		}
 
 		System.out.println(objectChain.size() + " objetos movidos");
@@ -512,18 +528,28 @@ public class Room {
 			if (o instanceof Bomb) {
 				Bomb b = (Bomb) o;
 				Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
-				if(b.hasGravity() && canObjMoveTo(b, posBelow)) {
+				if (b.hasGravity() && canObjMoveTo(b, posBelow)) {
 					b.setPosition(posBelow);
 					checkAdjacentObjectsToBomb(b);
 				}
 				continue;
-
 			}
+			if (o instanceof Krab) {
+				Krab k = (Krab) o;
+				Point2D kposBelow = k.getPosition().plus(new Vector2D(0, 1));
 
+				// usa o teu canKrabMoveTo em vez de canObjMoveTo
+				if (canKrabMoveTo(k, kposBelow)) {
+					k.setPosition(kposBelow);
+				}
+
+				continue;
+			}
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
 			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
 			}
+
 		}
 	}
 
@@ -532,7 +558,8 @@ public class Room {
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
 				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())
-						|| (!(o instanceof Water) && !(o instanceof HoledWall) && !(o instanceof Trap))) {
+						|| (!(o instanceof Water) && !(o instanceof HoledWall) && !(o instanceof Trap)
+								&& !(o instanceof Krab)) && !(o instanceof Krab)) {
 					return false; // não pode passar
 				}
 				if (o instanceof HoledWall) {
@@ -555,12 +582,94 @@ public class Room {
 				if (!(o instanceof Water) && !(o instanceof HoledWall)) {
 					return false;
 				}
-				if ((!(obj instanceof Cup) && o instanceof HoledWall)) {
+				if ((!(obj instanceof Cup) && !(obj instanceof Krab) && o instanceof HoledWall)) {
 					return false;
 				}
 			}
 		}
 		return true;
+	}
+
+	private boolean canKrabMoveTo(Krab k, Point2D pos) {
+		for (GameObject o : objects) {
+			if (!o.getPosition().equals(pos))
+				continue;
+
+			if (o instanceof Wall || o instanceof SteelHorizontal) {
+				return false;
+			}
+
+			if (o instanceof Trap || o instanceof SmallFish || o instanceof BigFish) {
+				return true;
+			}
+
+			if (o instanceof HoledWall) {
+				return true;
+			}
+
+			if (!(o instanceof Water)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public boolean canKrabSpawnAt(Point2D pos) {
+		for (GameObject o : objects) {
+			if (o.getPosition().equals(pos) && !(o instanceof Water)) {
+				return false; // já há algo além da água
+			}
+		}
+		return true;
+	}
+
+	public void krabsMove() {
+		Random rnd = new Random();
+
+		for (GameObject o : new ArrayList<>(objects)) {
+			if (!(o instanceof Krab))
+				continue;
+
+			Krab k = (Krab) o;
+			int dx = rnd.nextBoolean() ? -1 : 1;
+			Point2D target = k.getPosition().plus(new Vector2D(dx, 0));
+
+			if (canKrabMoveTo(k, target)) {
+				k.setPosition(target);
+			}
+		}
+	}
+
+	public void krabRules() {
+
+		SmallFish sf = SmallFish.getInstance();
+		BigFish bf = BigFish.getInstance();
+
+		for (GameObject obj : new ArrayList<>(objects)) {
+			if (!(obj instanceof Krab))
+				continue;
+
+			Krab k = (Krab) obj;
+			Point2D kpos = k.getPosition();
+
+			if (objects.contains(sf) && sf.getPosition().equals(kpos)) {
+				removeObject(sf);
+				continue;
+			}
+
+			if (objects.contains(bf) && bf.getPosition().equals(kpos)) {
+				removeObject(k);
+				continue;
+			}
+
+			for (GameObject o : objects) {
+				if (o.getPosition().equals(kpos) && o instanceof Trap) {
+					removeObject(k);
+					break;
+				}
+			}
+		}
 	}
 
 }

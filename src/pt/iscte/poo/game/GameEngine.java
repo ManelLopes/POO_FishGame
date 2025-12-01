@@ -75,6 +75,8 @@ public class GameEngine implements Observer {
 				Room sfRoom = SmallFish.getInstance().getRoom();
 				sfRoom.pushObject(SmallFish.getInstance(), dir);
 				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
+				sfRoom.krabsMove();
+				currentRoom.krabRules();
 
 				if (isAnyFishCrushed()) {
 					gameOver();// show
@@ -86,6 +88,8 @@ public class GameEngine implements Observer {
 				bfRoom.pushObject(BigFish.getInstance(), dir);
 
 				BigFish.getInstance().move(BigFish.getInstance(), dir);
+				bfRoom.krabsMove();
+				currentRoom.krabRules();
 
 				if (isAnyFishCrushed()) {
 					gameOver();// show
@@ -100,6 +104,8 @@ public class GameEngine implements Observer {
 			processTick();
 			System.out.println(t);// meter a fazer show
 			currentRoom.applyGravity();
+			
+			currentRoom.krabRules();
 			if (isAnyFishCrushed()) {
 				gameOver();
 				return;
@@ -126,7 +132,7 @@ public class GameEngine implements Observer {
 		if (!currentRoom.getObjects().contains(BigFish.getInstance()) ||
 			    !currentRoom.getObjects().contains(SmallFish.getInstance())) {
 			    // algum peixe deixou de existir na room → morreu
-			    restartLevel();
+			    gameOver();
 			    return;
 			}
 
