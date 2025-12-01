@@ -24,6 +24,9 @@ public class GameEngine implements Observer {
 	private int lastTickProcessed = 0;
 	private ArrayList<String> roomOrder = new ArrayList<>();
 	private int currLevelIndex = 0;
+	private boolean gameFinished = false;
+	
+
 
 	public GameEngine() {
 		rooms = new HashMap<String, Room>();
@@ -32,19 +35,21 @@ public class GameEngine implements Observer {
 		updateGUI();
 		SmallFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().setRoom(currentRoom);
+		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+	    SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 	}
 
 	private void loadGame() {
-		File[] files = new File("./rooms").listFiles();
-		
-		for (File f : files) {
-			rooms.put(f.getName(), Room.readRoom(f, this));
-			roomOrder.add(f.getName());
-		}
-		
-		currLevelIndex = 0;
-		currentRoom = rooms.get(roomOrder.get(currLevelIndex));
-		
+	    File[] files = new File("./rooms").listFiles();
+	    java.util.Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
+
+	    for (File f : files) {
+	        rooms.put(f.getName(), Room.readRoom(f, this));
+	        roomOrder.add(f.getName());
+	    }
+
+	    currLevelIndex = 0;
+	    currentRoom = rooms.get(roomOrder.get(currLevelIndex));
 	}
 
 	public boolean isAnyFishCrushed() {
@@ -61,6 +66,8 @@ public class GameEngine implements Observer {
 
 	@Override
 	public void update(Observed source) {
+		if(gameFinished)
+			return;
 
 		if (ImageGUI.getInstance().wasKeyPressed()) {
 			int k = ImageGUI.getInstance().keyPressed();
@@ -198,6 +205,8 @@ public class GameEngine implements Observer {
 
 		SmallFish.getInstance().setRoom(newRoom);
 		BigFish.getInstance().setRoom(newRoom);
+		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+	    SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 
 		updateGUI();
 
@@ -206,22 +215,29 @@ public class GameEngine implements Observer {
 	
 	private void nextLevel() {
 		
-		currLevelIndex++;
-		
-		if(currLevelIndex >= roomOrder.size()) {
-			ImageGUI.getInstance().showMessage("Game Over", "Game Over");
-			return;
-		}
-		
-		String nextRoomName = roomOrder.get(currLevelIndex);
-		currentRoom = rooms.get(nextRoomName);
-		
-		SmallFish.getInstance().setRoom(currentRoom);
-		BigFish.getInstance().setRoom(currentRoom);
-		
-		updateGUI();
-		
+	    currLevelIndex++;
+			
+	    if (currLevelIndex >= roomOrder.size()) {
+	        ImageGUI.getInstance().showMessage("Parabéns", "Nivel Concluído");
+	        gameFinished = true;  // se já meteste esta flag
+	        return;
+	    }
+			
+	    String nextRoomName = roomOrder.get(currLevelIndex);
+	    currentRoom = rooms.get(nextRoomName);
+
+	    // dizer aos peixes em que room estão
+	    SmallFish.getInstance().setRoom(currentRoom);
+	    BigFish.getInstance().setRoom(currentRoom);
+
+	    // 👇 reposicionar peixes nas coords de início desse room
+	    BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+	    SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
+	    
+
+	    updateGUI();
 	}
+
 
 	private void gameOver() {
 		ImageGUI.getInstance().showMessage("Game Over", "Game Over");
