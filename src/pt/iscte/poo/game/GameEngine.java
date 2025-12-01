@@ -188,15 +188,7 @@ public class GameEngine implements Observer {
 	}
 	
 	private void gameOver() {
-        // Mensagem modal: o jogo "pausa" até o jogador clicar OK
-        JOptionPane.showMessageDialog(
-                null,              // parent (null = centro do ecrã)
-                "Game Over",       // mensagem
-                "Game Over",       // título da janela
-                JOptionPane.INFORMATION_MESSAGE
-        );
-
-        // Quando o jogador clicar em OK, reiniciamos o nível
+		ImageGUI.getInstance().showMessage("Game Over", "Game Over");
         restartLevel();
     }
 
