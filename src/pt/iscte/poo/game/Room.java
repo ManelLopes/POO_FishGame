@@ -164,7 +164,7 @@ public class Room {
 					GameObject krab = new Krab(r);
 					krab.setPosition(pos);
 					r.addObject(krab);
-					
+
 				}
 			}
 
@@ -192,6 +192,11 @@ public class Room {
 			}
 			if (obj == null) {
 				break; // acabou a cadeia
+			}
+
+			if (objectChain.isEmpty() && obj instanceof Buoy && dir.getX() == 0 && dir.getY() == 1
+					&& !(fish instanceof BigFish)) {
+				return false;
 			}
 			objectChain.add(obj);
 			curPos = curPos.plus(dir); // próxima casa na mesma direção
@@ -250,30 +255,29 @@ public class Room {
 		System.out.println(objectChain.size() + " objetos movidos");
 		return true;
 	}
-	
-	private boolean applyBuoyPhysics(GameObject b) {  // ta feito crlh
 
-	    Point2D pos      = b.getPosition();
-	    Point2D up       = pos.plus(new Vector2D(0, -1));
-	    Point2D posBelow = pos.plus(new Vector2D(0,  1));
+	private boolean applyBuoyPhysics(GameObject b) { // ta feito crlh
 
-	    // ver o que está mesmo por cima da boia
-	    GameObject aboveBuoy = getTopEntityAt(up);
-	    boolean hasMovableAbove = (aboveBuoy != null && aboveBuoy.isMovable());
+		Point2D pos = b.getPosition();
+		Point2D up = pos.plus(new Vector2D(0, -1));
+		Point2D posBelow = pos.plus(new Vector2D(0, 1));
 
-	    if (hasMovableAbove && canObjMoveTo(b, posBelow)) {
-	        // tem objeto em cima e afunda 
-	        b.setPosition(posBelow);
-	        return true;
-	    } else if (!hasMovableAbove && canObjMoveTo(b, up)) {
-	        // não tem nada em cima e flutua
-	        b.setPosition(up);
-	        return true;
-	    }
+		// ver o que está mesmo por cima da boia
+		GameObject aboveBuoy = getTopEntityAt(up);
+		boolean hasMovableAbove = (aboveBuoy != null && aboveBuoy.isMovable());
 
-	    return false;
+		if (hasMovableAbove && canObjMoveTo(b, posBelow)) {
+			// tem objeto em cima e afunda
+			b.setPosition(posBelow);
+			return true;
+		} else if (!hasMovableAbove && canObjMoveTo(b, up)) {
+			// não tem nada em cima e flutua
+			b.setPosition(up);
+			return true;
+		}
+
+		return false;
 	}
-
 
 	public boolean checkObjectsOnTop(GameCharacter fish) {
 
@@ -504,12 +508,23 @@ public class Room {
 			if (o instanceof Buoy) {
 				applyBuoyPhysics(o);
 			}
+
+			if (o instanceof Bomb) {
+				Bomb b = (Bomb) o;
+				Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
+				if(b.hasGravity() && canObjMoveTo(b, posBelow)) {
+					b.setPosition(posBelow);
+					checkAdjacentObjectsToBomb(b);
+				}
+				continue;
+
+			}
+
 			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
 			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
 				o.setPosition(posBelow);
 			}
 		}
-
 	}
 
 	public boolean canMoveTo(GameCharacter fish, Point2D pos) {
