@@ -295,7 +295,7 @@ public class Room {
 			// procurar objeto EXACTAMENTE em upperPos
 			for (GameObject o : objects) {
 				if (o.getPosition().equals(upperPos)) {
-					objOnTop = o;
+					objOnTop = getTopEntityAt(upperPos);
 					break;
 				}
 			}

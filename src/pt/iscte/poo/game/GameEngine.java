@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import objects.SmallFish;
 import objects.BigFish;
 import objects.Bomb;
@@ -75,7 +77,7 @@ public class GameEngine implements Observer {
 				SmallFish.getInstance().move(SmallFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();// show
+					gameOver();// show
 					return;
 				}
 
@@ -86,7 +88,7 @@ public class GameEngine implements Observer {
 				BigFish.getInstance().move(BigFish.getInstance(), dir);
 
 				if (isAnyFishCrushed()) {
-					restartLevel();// show
+					gameOver();// show
 					return;
 				}
 			}
@@ -99,7 +101,7 @@ public class GameEngine implements Observer {
 			System.out.println(t);// meter a fazer show
 			currentRoom.applyGravity();
 			if (isAnyFishCrushed()) {
-				restartLevel();
+				gameOver();
 				return;
 			}
 
@@ -117,7 +119,7 @@ public class GameEngine implements Observer {
 		}
 
 		if (isAnyFishCrushed()) {
-			restartLevel();
+			gameOver();
 			return;
 		}
 		
@@ -136,7 +138,7 @@ public class GameEngine implements Observer {
 
 			if (o.getPosition().equals(pos) && o instanceof objects.Trap) {
 				System.out.println("Game Over");
-				restartLevel();
+				gameOver();
 				return;
 			}
 			if (currentRoom.checkObjectsOnTopOfObjects(o)) {
@@ -184,5 +186,18 @@ public class GameEngine implements Observer {
 
 		System.out.println("Reiniciado nível: " + roomName);
 	}
+	
+	private void gameOver() {
+        // Mensagem modal: o jogo "pausa" até o jogador clicar OK
+        JOptionPane.showMessageDialog(
+                null,              // parent (null = centro do ecrã)
+                "Game Over",       // mensagem
+                "Game Over",       // título da janela
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        // Quando o jogador clicar em OK, reiniciamos o nível
+        restartLevel();
+    }
 
 }
