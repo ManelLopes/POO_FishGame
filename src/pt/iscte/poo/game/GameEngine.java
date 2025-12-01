@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 
 import objects.SmallFish;
 import objects.BigFish;
-import objects.Bomb;
 import objects.GameCharacter;
 import objects.GameObject;
 import pt.iscte.poo.gui.ImageGUI;
@@ -24,6 +22,8 @@ public class GameEngine implements Observer {
 	private Map<String, Room> rooms;
 	private Room currentRoom;
 	private int lastTickProcessed = 0;
+	private ArrayList<String> roomOrder = new ArrayList<>();
+	private int currLevelIndex = 0;
 
 	public GameEngine() {
 		rooms = new HashMap<String, Room>();
@@ -36,9 +36,15 @@ public class GameEngine implements Observer {
 
 	private void loadGame() {
 		File[] files = new File("./rooms").listFiles();
+		
 		for (File f : files) {
 			rooms.put(f.getName(), Room.readRoom(f, this));
+			roomOrder.add(f.getName());
 		}
+		
+		currLevelIndex = 0;
+		currentRoom = rooms.get(roomOrder.get(currLevelIndex));
+		
 	}
 
 	public boolean isAnyFishCrushed() {
@@ -104,7 +110,7 @@ public class GameEngine implements Observer {
 			processTick();
 			System.out.println(t);// meter a fazer show
 			currentRoom.applyGravity();
-			
+
 			currentRoom.krabRules();
 			if (isAnyFishCrushed()) {
 				gameOver();
@@ -113,28 +119,28 @@ public class GameEngine implements Observer {
 
 		}
 
-		ArrayList<Bomb> bombsToCheck = new ArrayList<>();
-		for (GameObject o : currentRoom.getObjects()) {
-			if (o instanceof Bomb) {
-				bombsToCheck.add((Bomb) o);
-			}
-		}
-
-		for (Bomb b : bombsToCheck) {
-			currentRoom.checkAdjacentObjectsToBomb(b);
-		}
+//		ArrayList<Bomb> bombsToCheck = new ArrayList<>();
+//		for (GameObject o : currentRoom.getObjects()) {
+//			if (o instanceof Bomb) {
+//				bombsToCheck.add((Bomb) o);
+//			}
+//		}
+//
+//		for (Bomb b : bombsToCheck) {
+//			currentRoom.checkAdjacentObjectsToBomb(b);
+//		}
 
 		if (isAnyFishCrushed()) {
 			gameOver();
 			return;
 		}
-		
-		if (!currentRoom.getObjects().contains(BigFish.getInstance()) ||
-			    !currentRoom.getObjects().contains(SmallFish.getInstance())) {
-			    // algum peixe deixou de existir na room → morreu
-			    gameOver();
-			    return;
-			}
+
+		if (!currentRoom.getObjects().contains(BigFish.getInstance())
+				|| !currentRoom.getObjects().contains(SmallFish.getInstance())) {
+			// algum peixe deixou de existir na room → morreu
+			gameOver();
+			return;
+		}
 
 		Point2D pos = BigFish.getInstance().getPosition();
 
@@ -156,6 +162,11 @@ public class GameEngine implements Observer {
 		for (GameObject o : objsToRemove) {
 			System.out.println("removido" + o);
 			currentRoom.removeObject(o);
+		}
+		
+		if(currentRoom.bothFishesOut()) {
+			nextLevel();
+			return;
 		}
 
 		ImageGUI.getInstance().update();
@@ -193,9 +204,28 @@ public class GameEngine implements Observer {
 		System.out.println("Reiniciado nível: " + roomName);
 	}
 	
+	private void nextLevel() {
+		
+		currLevelIndex++;
+		
+		if(currLevelIndex >= roomOrder.size()) {
+			ImageGUI.getInstance().showMessage("Game Over", "Game Over");
+			return;
+		}
+		
+		String nextRoomName = roomOrder.get(currLevelIndex);
+		currentRoom = rooms.get(nextRoomName);
+		
+		SmallFish.getInstance().setRoom(currentRoom);
+		BigFish.getInstance().setRoom(currentRoom);
+		
+		updateGUI();
+		
+	}
+
 	private void gameOver() {
 		ImageGUI.getInstance().showMessage("Game Over", "Game Over");
-        restartLevel();
-    }
+		restartLevel();
+	}
 
 }

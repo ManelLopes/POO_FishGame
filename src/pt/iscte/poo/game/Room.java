@@ -672,4 +672,32 @@ public class Room {
 		}
 	}
 
+	public boolean bothFishesOut() {
+
+		Point2D posBig = BigFish.getInstance().getPosition();
+		Point2D posSmall = SmallFish.getInstance().getPosition();
+		
+		int length = 10;
+		int width = 10;
+		
+		boolean bigOut = false;
+		
+		if(posBig.getX() >= length || posBig.getY() > width) {
+			bigOut = true;
+		}
+		
+		boolean smallOut = false;
+		
+		if(posSmall.getX() > length || posSmall.getY() > width) {
+			smallOut = true;
+		}
+		
+		if(smallOut == true && bigOut == true) {
+			return true;
+		}
+		
+		return false;
+
+	}
+
 }
