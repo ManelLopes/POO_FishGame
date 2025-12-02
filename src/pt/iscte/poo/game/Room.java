@@ -23,6 +23,7 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import objects.Wall;
 import objects.SteelHorizontal;
+import objects.SteelVertical;
 import objects.Stone;
 import objects.Trap;
 import objects.Trunk;
@@ -167,6 +168,10 @@ public class Room {
 					krab.setPosition(pos);
 					r.addObject(krab);
 
+				} else if (c=='E') {
+					GameObject sv = new SteelVertical(r);
+					sv.setPosition(pos);
+					r.addObject(sv);
 				}
 			}
 
