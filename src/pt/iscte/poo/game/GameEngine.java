@@ -213,8 +213,7 @@ public class GameEngine implements Observer {
 		
 		//lastTickProcessed = 0;
 		 lastTickProcessed = ImageGUI.getInstance().getTicks();
-		 gameTicks = 0;
-		 moveCount = 0;
+		
 
 		updateGUI();
 
