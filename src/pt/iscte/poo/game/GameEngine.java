@@ -21,6 +21,7 @@ public class GameEngine implements Observer {
 	private Map<String, Room> rooms;
 	private Room currentRoom;
 	private int lastTickProcessed = 0;
+	private int gameTicks = 0;
 	private ArrayList<String> roomOrder = new ArrayList<>();
 	private int currLevelIndex = 0;
 	private boolean gameFinished = false;
@@ -176,7 +177,7 @@ public class GameEngine implements Observer {
 		}
 
 		ImageGUI.getInstance().setStatusMessage(
-				"Nível: " + currentRoom.getName() + "  | Jogadas: " + moveCount + "  | Ticks: " + lastTickProcessed);
+				"Nível: " + currentRoom.getName() + "  | Jogadas: " + moveCount + "  | Ticks: " + gameTicks);
 
 		ImageGUI.getInstance().update();
 	}
@@ -184,6 +185,7 @@ public class GameEngine implements Observer {
 	private void processTick() {
 
 		lastTickProcessed++;
+		gameTicks++;
 
 	}
 
@@ -209,6 +211,9 @@ public class GameEngine implements Observer {
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 		
 		//lastTickProcessed = 0;
+		 lastTickProcessed = ImageGUI.getInstance().getTicks();
+		 gameTicks = 0;
+		 moveCount = 0;
 
 		updateGUI();
 
@@ -266,7 +271,8 @@ public class GameEngine implements Observer {
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 
-		lastTickProcessed = 0;
+		lastTickProcessed = ImageGUI.getInstance().getTicks();
+		gameTicks = 0;
 		moveCount = 0; // se tiveres
 		gameFinished = false;
 
@@ -294,12 +300,12 @@ public class GameEngine implements Observer {
 	private void registerHighScores() {
 
 		for (int i = 0; i < 10; i++) {
-			if (lastTickProcessed < bestTimes[i]) {
+			if (gameTicks < bestTimes[i]) {
 				for (int j = 9; j > i; j--) {
 					bestTimes[j] = bestTimes[j - 1];
 					bestMoves[j] = bestMoves[j - 1];
 				}
-				bestTimes[i] = lastTickProcessed;
+				bestTimes[i] = gameTicks;
 				bestMoves[i] = moveCount;
 				break;
 			}
