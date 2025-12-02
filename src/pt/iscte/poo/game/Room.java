@@ -168,7 +168,7 @@ public class Room {
 					krab.setPosition(pos);
 					r.addObject(krab);
 
-				} else if (c=='E') {
+				} else if (c == 'E') {
 					GameObject sv = new SteelVertical(r);
 					sv.setPosition(pos);
 					r.addObject(sv);
@@ -472,40 +472,33 @@ public class Room {
 		Point2D below = bombPos.plus(new Vector2D(0, 1));
 
 		for (GameObject o : new ArrayList<>(objects)) {
-			if (o.getPosition().equals(left) 
-					&& !(o instanceof Water)
-					&& !(o instanceof Wall))
+			if (o.getPosition().equals(left) && !(o instanceof Water) && !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(right) 
-					&& !(o instanceof Water)
-					&& !(o instanceof Wall))
+			if (o.getPosition().equals(right) && !(o instanceof Water) && !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(top) 
-					&& !(o instanceof Water)
-					&& !(o instanceof Wall))
+			if (o.getPosition().equals(top) && !(o instanceof Water) && !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(below) 
-					&& !(o instanceof Water)
-					&& !(o instanceof Wall))
+			if (o.getPosition().equals(below) && !(o instanceof Water) && !(o instanceof Wall))
 				removeObject(o);
 		}
 
 		removeObject(bomb);
 
 	}
-	
+
 	public boolean isFishBelow(Bomb b) {
-	    Point2D below = b.getPosition().plus(new Vector2D(0, 1));
+		Point2D below = b.getPosition().plus(new Vector2D(0, 1));
 
-	    for (GameObject o : objects) {
-	        if (!o.getPosition().equals(below)) continue;
+		for (GameObject o : objects) {
+			if (!o.getPosition().equals(below))
+				continue;
 
-	        if (o instanceof SmallFish || o instanceof BigFish) {
-	            return true;
-	        }
-	    }
+			if (o instanceof SmallFish || o instanceof BigFish) {
+				return true;
+			}
+		}
 
-	    return false;
+		return false;
 	}
 
 	public boolean isObjectCrushed(GameObject obj) {
@@ -546,49 +539,57 @@ public class Room {
 
 	public void applyGravity() {
 
-		for (GameObject o : new ArrayList<>(objects)) {
+	    for (int i = 0; i < objects.size(); i++) {
 
-			if (o instanceof Buoy) {
-				applyBuoyPhysics(o);
-			}
+	        GameObject o = objects.get(i);
 
-			if (o instanceof Bomb) {
+	        // BOIA
+	        if (o instanceof Buoy) {
+	            applyBuoyPhysics(o);
+	            continue;
+	        }
+
+	        // BOMBA
+	        else if (o instanceof Bomb) {
 	            Bomb b = (Bomb) o;
 	            Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
 
-	            boolean canFall = b.hasGravity() && canObjMoveTo(b, posBelow);
+	            boolean canFall = b.hasGravity() && canBombFallTo(posBelow);
 
 	            if (canFall) {
-	                // cai
 	                b.setPosition(posBelow);
-	                b.setHasStartedFalling(true);   // <- já começou a cair
-	            } else if (b.hasStartedFalling()) {
-	            	
-	            	if (!isFishBelow(b)) {
-	                    checkAdjacentObjectsToBomb(b);
+	                b.setHasStartedFalling(true);
+	            } 
+	            else if (b.hasStartedFalling() && !isFishBelow(b)) {
+	                checkAdjacentObjectsToBomb(b);
 	            }
 
 	            continue;
-			}
-			if (o instanceof Krab) {
-				Krab k = (Krab) o;
-				Point2D kposBelow = k.getPosition().plus(new Vector2D(0, 1));
+	        }
 
-				// usa o teu canKrabMoveTo em vez de canObjMoveTo
-				if (canKrabMoveTo(k, kposBelow)) {
-					k.setPosition(kposBelow);
-				}
+	        // KRAB
+	        else if (o instanceof Krab) {
+	            Krab k = (Krab) o;
+	            Point2D pb = k.getPosition().plus(new Vector2D(0, 1));
 
-				continue;
-			}
-			Point2D posBelow2= o.getPosition().plus(new Vector2D(0, 1));
-			if (o.hasGravity() && canObjMoveTo(o, posBelow2)) {
-				o.setPosition(posBelow2);
-			}
+	            if (canKrabMoveTo(k, pb)) {
+	                k.setPosition(pb);
+	            }
 
-		}
+	            continue;
+	        }
+
+	        // NORMAL FALLING
+	        else {
+	            Point2D pb2 = o.getPosition().plus(new Vector2D(0, 1));
+
+	            if (o.hasGravity() && canObjMoveTo(o, pb2)) {
+	                o.setPosition(pb2);
+	            }
+	        }
+	    }
 	}
-	}
+
 
 	public boolean canMoveTo(GameCharacter fish, Point2D pos) {
 
@@ -711,21 +712,43 @@ public class Room {
 
 	public boolean bothFishesOut() {
 
-	    Point2D posBig   = BigFish.getInstance().getPosition();
-	    Point2D posSmall = SmallFish.getInstance().getPosition();
+		Point2D posBig = BigFish.getInstance().getPosition();
+		Point2D posSmall = SmallFish.getInstance().getPosition();
 
-	    int length = 10; // nº de colunas  (X: 0..9)
-	    int height = 10; // nº de linhas   (Y: 0..9)
+		int length = 10; // nº de colunas (X: 0..9)
+		int height = 10; // nº de linhas (Y: 0..9)
 
-	    boolean bigOut =
-	            (posBig.getX() < 0  || posBig.getX() >= length ||
-	             posBig.getY() < 0  || posBig.getY() >= height);
+		boolean bigOut = (posBig.getX() < 0 || posBig.getX() >= length || posBig.getY() < 0 || posBig.getY() >= height);
 
-	    boolean smallOut =
-	            (posSmall.getX() < 0  || posSmall.getX() >= length ||
-	             posSmall.getY() < 0  || posSmall.getY() >= height);
+		boolean smallOut = (posSmall.getX() < 0 || posSmall.getX() >= length || posSmall.getY() < 0
+				|| posSmall.getY() >= height);
 
-	    return bigOut && smallOut;
+		return bigOut && smallOut;
+	}
+
+	private boolean canBombFallTo(Point2D pos) {
+
+	    GameObject bottom = getTopEntityAt(pos);
+
+	    // Sem nada → deixa cair (porque vai cair em água obrigatoriamente)
+	    if (bottom == null)
+	        return true;
+
+	    // Se for água → cai
+	    if (bottom instanceof Water)
+	        return true;
+
+	    // Se for Boia → não cai
+	    if (bottom instanceof Buoy)
+	        return false;
+
+	    // Se for peixe → não cai (pela tua lógica anterior)
+	    if (bottom instanceof SmallFish || bottom instanceof BigFish)
+	        return false;
+
+	    // Tudo o resto (paredes, steel, tronco, pedra, trap...)
+	    // BLOQUEIA queda → NÃO cair, mas EXPLODIR
+	    return false;
 	}
 
 
