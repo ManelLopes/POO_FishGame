@@ -730,24 +730,20 @@ public class Room {
 
 	    GameObject bottom = getTopEntityAt(pos);
 
-	    // Sem nada → deixa cair (porque vai cair em água obrigatoriamente)
+	    
 	    if (bottom == null)
 	        return true;
 
-	    // Se for água → cai
 	    if (bottom instanceof Water)
 	        return true;
 
-	    // Se for Boia → não cai
 	    if (bottom instanceof Buoy)
 	        return false;
 
-	    // Se for peixe → não cai (pela tua lógica anterior)
 	    if (bottom instanceof SmallFish || bottom instanceof BigFish)
 	        return false;
 
-	    // Tudo o resto (paredes, steel, tronco, pedra, trap...)
-	    // BLOQUEIA queda → NÃO cair, mas EXPLODIR
+	   
 	    return false;
 	}
 
