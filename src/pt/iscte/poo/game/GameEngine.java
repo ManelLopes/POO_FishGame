@@ -25,6 +25,9 @@ public class GameEngine implements Observer {
 	private int currLevelIndex = 0;
 	private boolean gameFinished = false;
 	private int moveCount = 0;
+	private int[] bestTimes = new int[10];
+	private int[] bestMoves = new int[10];
+	private boolean highScoresLoaded = false;
 
 	public GameEngine() {
 		rooms = new HashMap<String, Room>();
@@ -76,7 +79,11 @@ public class GameEngine implements Observer {
 			}
 
 			if (k == 82) { // código ASCII para 'R'
-				restartLevel();
+				if (gameFinished) {
+					restartGame(); // recomeça jogo todo
+				} else {
+					restartLevel(); // reinicia só o nível atual
+				}
 				return;
 			}
 
@@ -115,9 +122,10 @@ public class GameEngine implements Observer {
 		}
 
 		int t = ImageGUI.getInstance().getTicks();
+
 		while (lastTickProcessed < t) {
 			processTick();
-			System.out.println(t);// meter a fazer show
+			System.out.println(t);
 			currentRoom.applyGravity();
 
 			currentRoom.krabRules();
@@ -166,12 +174,9 @@ public class GameEngine implements Observer {
 			nextLevel();
 			return;
 		}
-		
+
 		ImageGUI.getInstance().setStatusMessage(
-			    "Nível: " + currentRoom.getName() +
-			    "  | Jogadas: " + moveCount +
-			    "  | Ticks: " + lastTickProcessed
-			);
+				"Nível: " + currentRoom.getName() + "  | Jogadas: " + moveCount + "  | Ticks: " + lastTickProcessed);
 
 		ImageGUI.getInstance().update();
 	}
@@ -179,9 +184,7 @@ public class GameEngine implements Observer {
 	private void processTick() {
 
 		lastTickProcessed++;
-		// meter estatistica, bomba rebentar, 2 ancoras so matam qd caem
-		// as 2
-		// meter nivel novo
+
 	}
 
 	public void updateGUI() {
@@ -204,6 +207,8 @@ public class GameEngine implements Observer {
 		BigFish.getInstance().setRoom(newRoom);
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
+		
+		//lastTickProcessed = 0;
 
 		updateGUI();
 
@@ -215,19 +220,20 @@ public class GameEngine implements Observer {
 		currLevelIndex++;
 
 		if (currLevelIndex >= roomOrder.size()) {
-			ImageGUI.getInstance().showMessage("Parabéns", "Nivel Concluído");
-			gameFinished = true; // se já meteste esta flag
+			initialHighScores();
+			registerHighScores();
+			ImageGUI.getInstance().showMessage("Highscores", formatHighscores());
+			gameFinished = true;
+			restartGame();
 			return;
 		}
 
 		String nextRoomName = roomOrder.get(currLevelIndex);
 		currentRoom = rooms.get(nextRoomName);
 
-		// dizer aos peixes em que room estão
 		SmallFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().setRoom(currentRoom);
 
-		// 👇 reposicionar peixes nas coords de início desse room
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 
@@ -237,6 +243,79 @@ public class GameEngine implements Observer {
 	private void gameOver() {
 		ImageGUI.getInstance().showMessage("Game Over", "Game Over");
 		restartLevel();
+	}
+
+	private void restartGame() {
+
+		if (!gameFinished) {
+			return; // só recomeça se o jogo tiver mesmo terminado
+		}
+
+		String roomName = "room0.txt";
+		File f = new File("./rooms/" + roomName);
+
+		Room newRoom = Room.readRoom(f, this);
+		currentRoom = newRoom;
+
+		// atualizar índice do nível para voltar ao primeiro
+		currLevelIndex = 0;
+
+		// dizer aos peixes em que room estão
+		SmallFish.getInstance().setRoom(newRoom);
+		BigFish.getInstance().setRoom(newRoom);
+		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
+
+		lastTickProcessed = 0;
+		moveCount = 0; // se tiveres
+		gameFinished = false;
+
+		updateGUI();
+
+		System.out.println("Reiniciado nível: " + roomName);
+
+	}
+
+	private void initialHighScores() {
+
+		if (highScoresLoaded) {
+			return;
+		}
+
+		highScoresLoaded = true;
+
+		for (int i = 0; i < 10; i++) {
+			bestTimes[i] = Integer.MAX_VALUE;
+			bestMoves[i] = Integer.MAX_VALUE;
+		}
+
+	}
+
+	private void registerHighScores() {
+
+		for (int i = 0; i < 10; i++) {
+			if (lastTickProcessed < bestTimes[i]) {
+				for (int j = 9; j > i; j--) {
+					bestTimes[j] = bestTimes[j - 1];
+					bestMoves[j] = bestMoves[j - 1];
+				}
+				bestTimes[i] = lastTickProcessed;
+				bestMoves[i] = moveCount;
+				break;
+			}
+		}
+
+	}
+
+	private String formatHighscores() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(" #  Tempo (ticks)   Movimentos\n");
+		for (int i = 0; i < 10; i++) {
+			if (bestTimes[i] == Integer.MAX_VALUE)
+				break; // entradas vazias
+			sb.append(String.format("%2d  %12d   %9d\n", i + 1, bestTimes[i], bestMoves[i]));
+		}
+		return sb.toString();
 	}
 
 }
