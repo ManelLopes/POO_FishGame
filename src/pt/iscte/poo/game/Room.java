@@ -472,18 +472,40 @@ public class Room {
 		Point2D below = bombPos.plus(new Vector2D(0, 1));
 
 		for (GameObject o : new ArrayList<>(objects)) {
-			if (o.getPosition().equals(left) && !(o instanceof Water))
+			if (o.getPosition().equals(left) 
+					&& !(o instanceof Water)
+					&& !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(right) && !(o instanceof Water))
+			if (o.getPosition().equals(right) 
+					&& !(o instanceof Water)
+					&& !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(top) && !(o instanceof Water))
+			if (o.getPosition().equals(top) 
+					&& !(o instanceof Water)
+					&& !(o instanceof Wall))
 				removeObject(o);
-			if (o.getPosition().equals(below) && !(o instanceof Water))
+			if (o.getPosition().equals(below) 
+					&& !(o instanceof Water)
+					&& !(o instanceof Wall))
 				removeObject(o);
 		}
 
 		removeObject(bomb);
 
+	}
+	
+	public boolean isFishBelow(Bomb b) {
+	    Point2D below = b.getPosition().plus(new Vector2D(0, 1));
+
+	    for (GameObject o : objects) {
+	        if (!o.getPosition().equals(below)) continue;
+
+	        if (o instanceof SmallFish || o instanceof BigFish) {
+	            return true;
+	        }
+	    }
+
+	    return false;
 	}
 
 	public boolean isObjectCrushed(GameObject obj) {
@@ -524,20 +546,29 @@ public class Room {
 
 	public void applyGravity() {
 
-		for (GameObject o : objects) {
+		for (GameObject o : new ArrayList<>(objects)) {
 
 			if (o instanceof Buoy) {
 				applyBuoyPhysics(o);
 			}
 
 			if (o instanceof Bomb) {
-				Bomb b = (Bomb) o;
-				Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
-				if (b.hasGravity() && canObjMoveTo(b, posBelow)) {
-					b.setPosition(posBelow);
-					checkAdjacentObjectsToBomb(b);
-				}
-				continue;
+	            Bomb b = (Bomb) o;
+	            Point2D posBelow = b.getPosition().plus(new Vector2D(0, 1));
+
+	            boolean canFall = b.hasGravity() && canObjMoveTo(b, posBelow);
+
+	            if (canFall) {
+	                // cai
+	                b.setPosition(posBelow);
+	                b.setHasStartedFalling(true);   // <- já começou a cair
+	            } else if (b.hasStartedFalling()) {
+	            	
+	            	if (!isFishBelow(b)) {
+	                    checkAdjacentObjectsToBomb(b);
+	            }
+
+	            continue;
 			}
 			if (o instanceof Krab) {
 				Krab k = (Krab) o;
@@ -550,12 +581,13 @@ public class Room {
 
 				continue;
 			}
-			Point2D posBelow = o.getPosition().plus(new Vector2D(0, 1));
-			if (o.hasGravity() && canObjMoveTo(o, posBelow)) {
-				o.setPosition(posBelow);
+			Point2D posBelow2= o.getPosition().plus(new Vector2D(0, 1));
+			if (o.hasGravity() && canObjMoveTo(o, posBelow2)) {
+				o.setPosition(posBelow2);
 			}
 
 		}
+	}
 	}
 
 	public boolean canMoveTo(GameCharacter fish, Point2D pos) {

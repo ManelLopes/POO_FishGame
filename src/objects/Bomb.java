@@ -3,6 +3,7 @@ package objects;
 import pt.iscte.poo.game.Room;
 
 public class Bomb extends GameObject{
+	private boolean hasStartedFalling = false;
 
 	public Bomb(Room room) {
 		super(room);
@@ -39,6 +40,14 @@ public class Bomb extends GameObject{
 			return true;
 		return false;
 	}
+
+    public boolean hasStartedFalling() {
+        return hasStartedFalling;
+    }
+
+    public void setHasStartedFalling(boolean hasStartedFalling) {
+        this.hasStartedFalling = hasStartedFalling;
+    }
 
 
 	

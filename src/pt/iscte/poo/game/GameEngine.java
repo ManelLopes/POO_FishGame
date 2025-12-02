@@ -180,6 +180,7 @@ public class GameEngine implements Observer {
 				"Nível: " + currentRoom.getName() + "  | Jogadas: " + moveCount + "  | Ticks: " + gameTicks);
 
 		ImageGUI.getInstance().update();
+		
 	}
 
 	private void processTick() {
