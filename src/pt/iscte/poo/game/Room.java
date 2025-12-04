@@ -356,7 +356,7 @@ public class Room {
 
 		// BIG FISH: morre se tiver 2 ou mais objetos em cima (quaisquer)
 		if (fish instanceof BigFish) {
-			if (heavy + light >= 2) {
+			if ((heavy == 1 && light >= 2) || heavy == 2) {
 				return false; // esmagado
 			}
 			return true; // seguro
