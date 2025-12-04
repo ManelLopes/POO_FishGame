@@ -35,7 +35,7 @@ public class Stone extends GameObject{
 	
 	@Override
 	public boolean goesTrough(GameObject o) {
-		return true;
+		return false;
 	}
 	
 	public boolean hasSpawnedCrab() {

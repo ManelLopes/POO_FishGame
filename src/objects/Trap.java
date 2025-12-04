@@ -23,13 +23,18 @@ public class Trap extends GameObject{
 		return false;
 	}
 
-//	@Override
-//	public boolean hasGravity() {
-//		return false;
-//	}
+	@Override
+	public boolean hasGravity() {
+		return true;
+	}
 
 	@Override
 	public boolean goesTrough(GameObject o) {
+		return true;
+	}
+	
+	@Override
+	public boolean isHeavy() {
 		return true;
 	}
 	

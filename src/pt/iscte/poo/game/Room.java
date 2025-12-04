@@ -200,6 +200,11 @@ public class Room {
 			if (obj == null) {
 				break; // acabou a cadeia
 			}
+			
+			if (obj instanceof Anchor && dir.getY() < 0) {
+		        System.out.println("Anchor não pode ser empurrada para cima");
+		        return false;
+		    }
 
 			if (objectChain.isEmpty() && obj instanceof Buoy && dir.getX() == 0 && dir.getY() == 1
 					&& !(fish instanceof BigFish)) {
@@ -270,6 +275,10 @@ public class Room {
 						s.setHasSpawnedCrab(true);
 					}
 				}
+			}
+			
+			if(obj instanceof Anchor) {
+				((Anchor) obj).setHasBeenMoved(true);
 			}
 		}
 
@@ -595,6 +604,9 @@ public class Room {
 
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
+				if(o instanceof Trap) {
+					return true;
+				}
 				if (o instanceof Wall || o instanceof SteelHorizontal || (SmallFish.isActive() && o.isHeavy())
 						|| (!(o instanceof Water) && !(o instanceof HoledWall) && !(o instanceof Trap)
 								&& !(o instanceof Krab)) && !(o instanceof Krab)) {
@@ -613,6 +625,10 @@ public class Room {
 	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
+				if(obj instanceof Trap && (o instanceof SmallFish || o instanceof BigFish)) {
+					return true;
+				}
+				
 				if ((obj.isHeavy() && o instanceof HoledWall) || o instanceof Trap || o instanceof Wall
 						|| o instanceof SteelHorizontal) {
 					return false;
