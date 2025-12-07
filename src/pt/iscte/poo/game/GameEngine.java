@@ -74,16 +74,16 @@ public class GameEngine implements Observer {
 		if (ImageGUI.getInstance().wasKeyPressed()) {
 			int k = ImageGUI.getInstance().keyPressed();
 
-			if (k == 32) { // Codigo ASCII do espaço seu burro
+			if (k == 32) {
 				SmallFish.switchFish();
 				return;
 			}
 
-			if (k == 82) { // código ASCII para 'R'
+			if (k == 82) {
 				if (gameFinished) {
-					restartGame(); // recomeça jogo todo
+					restartGame();
 				} else {
-					restartLevel(); // reinicia só o nível atual
+					restartLevel();
 				}
 				return;
 			}
@@ -160,7 +160,7 @@ public class GameEngine implements Observer {
 				return;
 			}
 			if (currentRoom.checkObjectsOnTopOfObjects(o)) {
-				objsToRemove.add(o); // onde se coloca por exemplo os troncos
+				objsToRemove.add(o);
 			}
 		}
 
@@ -250,7 +250,7 @@ public class GameEngine implements Observer {
 	private void restartGame() {
 
 		if (!gameFinished) {
-			return; // só recomeça se o jogo tiver mesmo terminado
+			return;
 		}
 
 		String roomName = "room0.txt";
@@ -259,10 +259,8 @@ public class GameEngine implements Observer {
 		Room newRoom = Room.readRoom(f, this);
 		currentRoom = newRoom;
 
-		// atualiza índice do nível para voltar ao primeiro
 		currLevelIndex = 0;
 
-		// dizer aos peixes em que room estão
 		SmallFish.getInstance().setRoom(newRoom);
 		BigFish.getInstance().setRoom(newRoom);
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
@@ -315,7 +313,7 @@ public class GameEngine implements Observer {
 		sb.append(" #  Tempo (ticks)   Movimentos\n");
 		for (int i = 0; i < 10; i++) {
 			if (bestTimes[i] == Integer.MAX_VALUE)
-				break; // entradas vazias
+				break;
 			sb.append(String.format("%2d  %12d   %9d\n", i + 1, bestTimes[i], bestMoves[i]));
 		}
 		return sb.toString();
