@@ -207,7 +207,7 @@ public class Room {
 			}
 
 			if (objectChain.isEmpty() && obj instanceof Buoy && dir.getX() == 0 && dir.getY() == 1
-					&& !(fish instanceof BigFish)) {
+					&& !(fish instanceof BigFish)) {// so o peixe grande empurra a boia para baixo
 				return false;
 			}
 			objectChain.add(obj);
@@ -263,10 +263,10 @@ public class Room {
 			Point2D newPos = obj.getPosition().plus(dir);
 			obj.setPosition(newPos);
 
-			// Se for pedra e movimento horizontal, criar Krab na 1ª vez
+			// Se for pedra e movimento horizontal, criar caranguejo na 1ª vez
 			if (obj instanceof Stone && dir.getY() == 0) {
 				Stone s = (Stone) obj;
-				if (!s.hasSpawnedCrab()) { // 👈 corrigido
+				if (!s.hasSpawnedCrab()) {
 					Point2D above = newPos.plus(new Vector2D(0, -1));
 					if (canKrabSpawnAt(above)) {
 						GameObject krab = new Krab(this);
