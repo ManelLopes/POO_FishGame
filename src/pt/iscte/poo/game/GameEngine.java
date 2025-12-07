@@ -100,7 +100,7 @@ public class GameEngine implements Observer {
 				moveCount++;
 
 				if (isAnyFishCrushed()) {
-					gameOver();// show
+					gameOver();
 					return;
 				}
 
@@ -115,7 +115,7 @@ public class GameEngine implements Observer {
 				moveCount++;
 
 				if (isAnyFishCrushed()) {
-					gameOver();// show
+					gameOver();
 					return;
 				}
 			}
@@ -144,7 +144,6 @@ public class GameEngine implements Observer {
 
 		if (!currentRoom.getObjects().contains(BigFish.getInstance())
 				|| !currentRoom.getObjects().contains(SmallFish.getInstance())) {
-			// algum peixe deixou de existir na room → morreu
 			gameOver();
 			return;
 		}
@@ -161,7 +160,7 @@ public class GameEngine implements Observer {
 				return;
 			}
 			if (currentRoom.checkObjectsOnTopOfObjects(o)) {
-				objsToRemove.add(o); // aqui vão entrar os troncos
+				objsToRemove.add(o); // onde se coloca por exemplo os troncos
 			}
 		}
 
@@ -180,7 +179,7 @@ public class GameEngine implements Observer {
 				"Nível: " + currentRoom.getName() + "  | Jogadas: " + moveCount + "  | Ticks: " + gameTicks);
 
 		ImageGUI.getInstance().update();
-		
+
 	}
 
 	private void processTick() {
@@ -210,10 +209,8 @@ public class GameEngine implements Observer {
 		BigFish.getInstance().setRoom(newRoom);
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
-		
-		//lastTickProcessed = 0;
-		 lastTickProcessed = ImageGUI.getInstance().getTicks();
-		
+
+		lastTickProcessed = ImageGUI.getInstance().getTicks();
 
 		updateGUI();
 
@@ -262,7 +259,7 @@ public class GameEngine implements Observer {
 		Room newRoom = Room.readRoom(f, this);
 		currentRoom = newRoom;
 
-		// atualizar índice do nível para voltar ao primeiro
+		// atualiza índice do nível para voltar ao primeiro
 		currLevelIndex = 0;
 
 		// dizer aos peixes em que room estão
@@ -273,7 +270,7 @@ public class GameEngine implements Observer {
 
 		lastTickProcessed = ImageGUI.getInstance().getTicks();
 		gameTicks = 0;
-		moveCount = 0; // se tiveres
+		moveCount = 0;
 		gameFinished = false;
 
 		updateGUI();

@@ -20,7 +20,7 @@ public class Trap extends GameObject{
 
 	@Override
 	public boolean isMovable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class Trap extends GameObject{
 
 	@Override
 	public boolean goesTrough(GameObject o) {
-		return true;
+		return false ; 
 	}
 	
 	@Override
