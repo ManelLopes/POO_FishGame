@@ -17,13 +17,13 @@ public class SmallFish extends GameCharacter {
 		return sf;
 	}
 	
-	public static void switchFish() {
+	public static void switchFish() {//troca o peixe a ser controlado
 		isActive = !isActive;
 		System.out.println("Agora a controlar: " + (isActive ? "SmallFish" : "BigFish"));
 	}
 	
 	
-	public static boolean isActive() {
+	public static boolean isActive() {//determina se o peixe pequeno está ativo
 		return isActive;
 	}
 	
@@ -46,7 +46,7 @@ public class SmallFish extends GameCharacter {
 		return true;
 	}
 	
-	public void move(GameCharacter fish, Vector2D dir) {
+	public void move(GameCharacter fish, Vector2D dir) {//aplica o png correto ao movimento
         super.move(fish, dir);
 
         if (dir.getX() < 0) {

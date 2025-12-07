@@ -82,7 +82,7 @@ public class Room {
 		return bigFishStartingPosition;
 	}
 
-	public static Room readRoom(File f, GameEngine engine) {
+	public static Room readRoom(File f, GameEngine engine) {//ler ficheiro e criar mapa com os objetos colocados no ficheiro
 		Room r = new Room();
 		r.setEngine(engine);
 		r.setName(f.getName());
@@ -182,7 +182,7 @@ public class Room {
 
 	}
 
-	public boolean pushObject(GameCharacter fish, Vector2D dir) {
+	public boolean pushObject(GameCharacter fish, Vector2D dir) {// empurrar objetos
 		Point2D fishPos = fish.getPosition();
 		Point2D curPos = fishPos.plus(dir);
 
@@ -278,7 +278,7 @@ public class Room {
 		return true;
 	}
 
-	private boolean applyBuoyPhysics(GameObject b) {
+	private boolean applyBuoyPhysics(GameObject b) {//mecanicas da boia
 
 		Point2D pos = b.getPosition();
 		Point2D up = pos.plus(new Vector2D(0, -1));
@@ -298,7 +298,7 @@ public class Room {
 		return false;
 	}
 
-	public boolean checkObjectsOnTop(GameCharacter fish) {
+	public boolean checkObjectsOnTop(GameCharacter fish) {//verificar objetos em cima de qualquer peixe
 
 		Point2D pos = fish.getPosition();
 		int heavy = 0;
@@ -321,7 +321,7 @@ public class Room {
 				break;
 			}
 
-			if (!objOnTop.isMovable()) {
+			if (!objOnTop.isMovable() && !objOnTop.hasGravity()) {
 				break;
 			}
 
@@ -345,6 +345,7 @@ public class Room {
 
 		if (fish instanceof SmallFish) {
 			if (heavy >= 1) {
+				System.out.println("ancora di merda");
 				return false;
 			}
 			if (light >= 2) {
@@ -357,7 +358,7 @@ public class Room {
 		return true;
 	}
 
-	public boolean someFishIsCrushed() {
+	public boolean someFishIsCrushed() {//verifica se algum peixe foi esmagado
 
 		if (!checkObjectsOnTop(BigFish.getInstance())) {
 			return true;
@@ -370,7 +371,7 @@ public class Room {
 
 	}
 
-	public boolean checkObjectsOnTopOfObjects(GameObject obj) {
+	public boolean checkObjectsOnTopOfObjects(GameObject obj) {//verifica se ha objetos em cima de objetos
 
 		if (!(obj instanceof Trunk)) {
 			return false;
@@ -417,7 +418,7 @@ public class Room {
 		return false;
 	}
 
-	public void checkAdjacentObjectsToBomb(Bomb bomb) {
+	public void checkAdjacentObjectsToBomb(Bomb bomb) {//verifica objetos adjacentes à boia
 
 		Point2D bombPos = bomb.getPosition();
 		System.out.println("Bomb a explodir em " + bombPos);
@@ -461,7 +462,7 @@ public class Room {
 
 	}
 
-	public boolean isFishBelow(Bomb b) {
+	public boolean isFishBelow(Bomb b) {//verifica se tem algum peixe por baixo da bomba 
 		Point2D below = b.getPosition().plus(new Vector2D(0, 1));
 
 		for (GameObject o : objects) {
@@ -476,7 +477,7 @@ public class Room {
 		return false;
 	}
 
-	public boolean isObjectCrushed(GameObject obj) {
+	public boolean isObjectCrushed(GameObject obj) {//verifica se algum objeto ta a ser esmagado
 		if (!(obj instanceof Trunk))
 			return false;
 
@@ -498,7 +499,7 @@ public class Room {
 		return false;
 	}
 
-	public GameObject getTopEntityAt(Point2D pos) {
+	public GameObject getTopEntityAt(Point2D pos) {//ver,numa determinada posicao, qual objeto está na layer mais acima 
 		GameObject top = null;
 
 		for (GameObject obj : objects) {
@@ -512,7 +513,7 @@ public class Room {
 		return top;
 	}
 
-	public void applyGravity() {
+	public void applyGravity() {//aplica a gravidade
 
 		for (int i = 0; i < objects.size(); i++) {
 
@@ -559,7 +560,7 @@ public class Room {
 		}
 	}
 
-	public boolean canMoveTo(GameCharacter fish, Point2D pos) {
+	public boolean canMoveTo(GameCharacter fish, Point2D pos) {//verificar se o peixe se pode mover para uma posicao
 
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
@@ -581,7 +582,7 @@ public class Room {
 		return true;
 	}
 
-	public boolean canObjMoveTo(GameObject obj, Point2D pos) {
+	public boolean canObjMoveTo(GameObject obj, Point2D pos) {//verifica se o objeto se pode mover para essa posicao
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos)) {
 				if (obj instanceof Trap && (o instanceof SmallFish || o instanceof BigFish)) {
@@ -603,7 +604,7 @@ public class Room {
 		return true;
 	}
 
-	private boolean canKrabMoveTo(Krab k, Point2D pos) {
+	private boolean canKrabMoveTo(Krab k, Point2D pos) {//verifica se o caranguejo se pode mover para essa posicao
 		for (GameObject o : objects) {
 			if (!o.getPosition().equals(pos))
 				continue;
@@ -628,7 +629,7 @@ public class Room {
 		return true;
 	}
 
-	public boolean canKrabSpawnAt(Point2D pos) {
+	public boolean canKrabSpawnAt(Point2D pos) {//verifica se o caranguejo se pode mover para uma posicao
 		for (GameObject o : objects) {
 			if (o.getPosition().equals(pos) && !(o instanceof Water)) {
 				return false;
@@ -637,7 +638,7 @@ public class Room {
 		return true;
 	}
 
-	public void krabsMove() {
+	public void krabsMove() {//movimento do caranguejo
 		Random rnd = new Random();
 
 		for (GameObject o : new ArrayList<>(objects)) {
@@ -654,7 +655,7 @@ public class Room {
 		}
 	}
 
-	public void krabRules() {
+	public void krabRules() {//regras do caranguejo
 
 		SmallFish sf = SmallFish.getInstance();
 		BigFish bf = BigFish.getInstance();
@@ -685,7 +686,7 @@ public class Room {
 		}
 	}
 
-	public boolean bothFishesOut() {
+	public boolean bothFishesOut() {//verifica se ambos os peixes estao fora do tabuleiro
 
 		Point2D posBig = BigFish.getInstance().getPosition();
 		Point2D posSmall = SmallFish.getInstance().getPosition();
@@ -701,7 +702,7 @@ public class Room {
 		return bigOut && smallOut;
 	}
 
-	private boolean canBombFallTo(Point2D pos) {
+	private boolean canBombFallTo(Point2D pos) {//verifica se a bomba pode cair para essa posicao
 
 		GameObject bottom = getTopEntityAt(pos);
 

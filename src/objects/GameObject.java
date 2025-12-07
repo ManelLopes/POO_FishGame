@@ -39,19 +39,19 @@ public abstract class GameObject implements ImageTile{
 		this.room = room;
 	}
 	
-	public  boolean isHeavy() {
+	public  boolean isHeavy() {//verifica se o objeto é pesado
 		return false;
 	}
 	
-	public boolean isMovable() {
+	public boolean isMovable() {//verifica se o objeto é movivel
 		return false;
 	}
 	
-	public boolean hasGravity() {
+	public boolean hasGravity() {//verifica se o objeto tem gravidade
 		return false;
 	}
 	
-	public boolean goesTrough(GameObject o) {
+	public boolean goesTrough(GameObject o) {//determina se passa pelo objeto o
 		return false;
 	}
 	

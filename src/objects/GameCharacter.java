@@ -14,7 +14,7 @@ public abstract class GameCharacter extends GameObject {
 	
 	
 	
-	public void move(GameCharacter fish, Vector2D dir) {
+	public void move(GameCharacter fish, Vector2D dir) {//movimento dos peixes
 		Point2D pos = getPosition();
 		
 	    Point2D newPos = pos.plus(dir);
