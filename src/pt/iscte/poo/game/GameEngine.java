@@ -2,6 +2,7 @@ package pt.iscte.poo.game;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class GameEngine implements Observer {
 
 	private void loadGame() {
 		File[] files = new File("./rooms").listFiles();
-		java.util.Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
+		Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
 
 		for (File f : files) {
 			rooms.put(f.getName(), Room.readRoom(f, this));
@@ -54,20 +55,20 @@ public class GameEngine implements Observer {
 		currentRoom = rooms.get(roomOrder.get(currLevelIndex));
 	}
 
-	public boolean isAnyFishCrushed() {//verifica se algum peixe está esmagado
+	public boolean isAnyFishCrushed() {// verifica se algum peixe está esmagado
 
 		return (isCrushed(SmallFish.getInstance()) || isCrushed(BigFish.getInstance()));
 
 	}
 
-	public boolean isCrushed(GameCharacter fish) {//verifica se o peixe esta esmagado
+	public boolean isCrushed(GameCharacter fish) {// verifica se o peixe esta esmagado
 
 		return currentRoom.someFishIsCrushed();
 
 	}
 
 	@Override
-	public void update(Observed source) {//trata de todas as mudancas que ha no tabuleiro a cada tick
+	public void update(Observed source) {// trata de todas as mudancas que ha no tabuleiro a cada tick
 		if (gameFinished)
 			return;
 
@@ -196,7 +197,7 @@ public class GameEngine implements Observer {
 		}
 	}
 
-	private void restartLevel() {//reinicia o nivel
+	private void restartLevel() {// reinicia o nivel
 
 		String roomName = currentRoom.getName();
 		File f = new File("./rooms/" + roomName);
@@ -217,13 +218,14 @@ public class GameEngine implements Observer {
 		System.out.println("Reiniciado nível: " + roomName);
 	}
 
-	private void nextLevel() {//carrega o proximo nivel
+	private void nextLevel() {// carrega o proximo nivel
 
 		currLevelIndex++;
 
 		if (currLevelIndex >= roomOrder.size()) {
 			initialHighScores();
 			registerHighScores();
+			System.out.println("HIGHSCORES STRING:\n" + formatHighscores());
 			ImageGUI.getInstance().showMessage("Highscores", formatHighscores());
 			gameFinished = true;
 			restartGame();
@@ -231,7 +233,7 @@ public class GameEngine implements Observer {
 		}
 
 		String nextRoomName = roomOrder.get(currLevelIndex);
-		currentRoom = rooms.get(nextRoomName);
+		currentRoom = rooms.get(nextRoomName);//usa o hashMap
 
 		SmallFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().setRoom(currentRoom);
@@ -242,12 +244,12 @@ public class GameEngine implements Observer {
 		updateGUI();
 	}
 
-	private void gameOver() {//termina o jogo
+	private void gameOver() {// termina o jogo
 		ImageGUI.getInstance().showMessage("Game Over", "Game Over");
 		restartLevel();
 	}
 
-	private void restartGame() {//reinicia o jogo depois de terminar os niveis todos
+	private void restartGame() {// reinicia o jogo depois de terminar os niveis todos
 
 		if (!gameFinished) {
 			return;
@@ -277,7 +279,8 @@ public class GameEngine implements Observer {
 
 	}
 
-	private void initialHighScores() {//regista os highScores iniciais que sao valores maximos que é para puderem comparar com os nossos tempos
+	private void initialHighScores() {// regista os highScores iniciais que sao valores maximos que é para puderem
+										// comparar com os nossos tempos
 
 		if (highScoresLoaded) {
 			return;
@@ -292,11 +295,13 @@ public class GameEngine implements Observer {
 
 	}
 
-	private void registerHighScores() {//regista os highScores de cada jogo
+	private void registerHighScores() {// regista os highScores de cada jogo
 
+		System.out.println("REGISTO SCORE: gameTicks=" + gameTicks + " moves=" + moveCount);
 		for (int i = 0; i < 10; i++) {
+			System.out.println("ANTES bestTimes[" + i + "]=" + bestTimes[i]);
 			if (gameTicks < bestTimes[i]) {
-				for (int j = 9; j > i; j--) {
+				for (int j = 9; j > i; j--) {//deixar a posicao necessara vazia
 					bestTimes[j] = bestTimes[j - 1];
 					bestMoves[j] = bestMoves[j - 1];
 				}
@@ -308,7 +313,7 @@ public class GameEngine implements Observer {
 
 	}
 
-	private String formatHighscores() {//exibe o formato desejado na tabela de highScores
+	private String formatHighscores() {// exibe o formato desejado na tabela de highScores
 		StringBuilder sb = new StringBuilder();
 		sb.append(" #  Tempo (ticks)   Movimentos\n");
 		for (int i = 0; i < 10; i++) {
